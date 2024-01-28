@@ -21,6 +21,8 @@
     "paths": {
       "@src/*": ["./src/*"],
       "@test/*": ["./test/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@main/*": ["./src/main/*"],
     },
     "rootDirs": ["./src", "./test"],
     "experimentalDecorators": true,
