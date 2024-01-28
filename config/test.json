@@ -1,0 +1,13 @@
+{
+  "App": {
+    "port": 8080
+  },
+  "database": {
+    "url": "postgresql://root:root@localhost:5435/app_database_test",
+    "schema": "app_schema_test"
+  },
+  "logger": {
+    "enabled": true,
+    "level": "info"
+  }
+}

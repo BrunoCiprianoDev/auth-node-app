@@ -1,0 +1,13 @@
+{
+  "App": {
+    "port": "API_PORT"
+  },
+  "database": {
+    "url": "DATABASE_URL",
+    "schema": "DATABASE_SCHEMA"
+  },
+  "logger": {
+    "enabled": true,
+    "level": "info"
+  }
+}
