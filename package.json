@@ -18,7 +18,8 @@
     "test:docker:up": "docker compose up -d database_test",
     "test:docker:down": "docker compose stop database_test",
     "test:unit": "jest",
-    "test:functional": "npm run test:docker:up && jest --projects ./test --runInBand && npm run test:docker:down"
+    "test:functional": "npm run test:docker:up && jest --projects ./test --runInBand && npm run test:docker:down",
+    "test": "npm run test:unit && npm run test:functional"
   },
   "devDependencies": {
     "@types/config": "^3.3.3",
