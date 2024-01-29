@@ -13,6 +13,7 @@ describe('UserController test', () => {
             createUser: jest.fn(),
             findById: jest.fn(),
             findByEmail: jest.fn(),
+            updatePassword: jest.fn()
         };
         userController = new UserController(mockedUserUseCases);
         mockedHttpContext = {
@@ -221,4 +222,65 @@ describe('UserController test', () => {
             });
         });
     });
+
+    // Update Password tests
+    describe('UpdatePassword tests', () => {
+
+        test('Must update password successfylly (status = 200)', async () => {
+            const serviceResponseExpected = {
+                id: 'uuid',
+                name: 'John Doe',
+                email: 'johnDoe@email.com',
+            };
+
+            jest.spyOn(mockedUserUseCases, 'updatePassword').mockResolvedValue(serviceResponseExpected);
+
+            (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
+                headers: { any: '' },
+                body: {
+                    id: 'uuid',
+                    newPassword: 'johnDoePass@!123',
+                    confirmNewPassword: 'johnDoePass@!123'
+                },
+            });
+
+            await userController.updatePassword(mockedHttpContext);
+
+            expect(mockedHttpContext.send).toHaveBeenCalledWith({
+                statusCode: 200,
+                body: serviceResponseExpected,
+            });
+        })
+
+        test('Must handle entries when some attribute is not found', async () => {
+            (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
+                headers: { any: '' },
+                body: {},
+            });
+
+            await userController.updatePassword(mockedHttpContext);
+
+            expect(mockedUserUseCases.updatePassword).toHaveBeenCalledWith('', '', '');
+        });
+
+        test('Must return bad request when UserUseCase returns an error', async () => {
+            jest.spyOn(mockedUserUseCases, 'updatePassword').mockRejectedValue(new Error('Unexpected'));
+
+            (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
+                headers: { any: '' },
+                body: {
+                    id: 'uuid',
+                    newPassword: 'johnDoePass@!123',
+                    confirmNewPassword: 'johnDoePass@!123'
+                },
+            });
+
+            await userController.updatePassword(mockedHttpContext);
+
+            expect(mockedHttpContext.send).toHaveBeenCalledWith({
+                statusCode: 500,
+                body: { message: `Unexpected error occurred.` },
+            });
+        });
+    })
 });

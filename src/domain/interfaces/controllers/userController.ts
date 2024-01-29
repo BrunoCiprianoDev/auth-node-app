@@ -43,4 +43,17 @@ export default class UserController extends BaseController {
       httpContext.send(this.handleClientErrors(error));
     }
   }
+
+  public async updatePassword(httpContext: IHttpContext): Promise<void> {
+    try {
+      const body = httpContext.getRequest().body;
+      const id = (body.name as string) ?? '';
+      const newPassword = (body.newPassword as string) ?? '';
+      const confirmNewPassword = (body.confirmNewPassword as string) ?? '';
+      const result = await this.userUseCases.updatePassword(id, newPassword, confirmNewPassword);
+      httpContext.send({ statusCode: 200, body: result });
+    } catch (error: unknown) {
+      httpContext.send(this.handleClientErrors(error));
+    }
+  }
 }

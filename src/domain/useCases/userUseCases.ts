@@ -13,8 +13,8 @@ export interface IUserUseCases {
 
   findByEmail(email: string): Promise<UserReadyOnly>;
 
-  /*     updatePassword(token: string, newPassword: string): Promise<UserReadyOnly>;
- 
+  updatePassword(id: string, newPassword: string, confirmNewPassword: string): Promise<UserReadyOnly>;
+  /*
    updateName(token: string, newName: string): Promise<UserReadyOnly>;*/
 }
 
@@ -77,6 +77,38 @@ export class UserUseCases implements IUserUseCases {
       return { id: result.id, name: result.name, email: result.email };
     } catch (error) {
       if (error instanceof NotFoundError) {
+        throw error;
+      }
+      throw new InternalServerError();
+    }
+  }
+
+  public async updatePassword(id: string, newPassword: string, confirmNewPassword: string): Promise<UserReadyOnly> {
+    try {
+
+      if (newPassword !== confirmNewPassword) {
+        throw new BadRequestError(
+          'Passwords do not match. Please make sure the password and confirm password are identical.',
+        );
+      }
+
+      if (!isValidPassword(newPassword)) {
+        throw new BadRequestError(
+          'The password is invalid. It must be at least 8 characters long and contain at least 2 special characters.',
+        );
+      }
+
+      const existsById = await this.userRepository.findById(id);
+
+      if (!existsById) {
+        throw new NotFoundError(`Unable to update password. User not found.`);
+      }
+
+      const result = await this.userRepository.updatePassword(id, newPassword);
+
+      return { id: result.id, name: result.name, email: result.email };
+    } catch (error) {
+      if (error instanceof NotFoundError || error instanceof BadRequestError) {
         throw error;
       }
       throw new InternalServerError();
