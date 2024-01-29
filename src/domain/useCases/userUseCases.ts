@@ -26,7 +26,7 @@ export class UserUseCases implements IUserUseCases {
   constructor(
     private userRepository: IUserRepository,
     private passwordEncryptor: IPasswordEncryptor,
-  ) { }
+  ) {}
 
   public async createUser(user: CreateUserData): Promise<UserReadyOnly> {
     try {

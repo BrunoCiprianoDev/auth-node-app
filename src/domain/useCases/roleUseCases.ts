@@ -8,7 +8,7 @@ export interface IRoleUseCases {
 }
 
 export class RoleUseCases implements IRoleUseCases {
-  constructor(private roleRepository: IRoleRepository) { }
+  constructor(private roleRepository: IRoleRepository) {}
 
   public async findById(id: string): Promise<Role> {
     let response: Role | null;

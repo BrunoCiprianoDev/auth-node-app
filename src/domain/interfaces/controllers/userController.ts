@@ -67,5 +67,4 @@ export default class UserController extends BaseController {
       httpContext.send(this.handleClientErrors(error));
     }
   }
-
 }

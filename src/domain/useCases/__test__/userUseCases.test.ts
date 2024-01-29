@@ -347,22 +347,15 @@ describe('UserUseCases tests', () => {
     });
 
     test('It should return an error if the name is invalid', async () => {
-      await expect(
-        userUseCases.updateName('uuid', ''),
-      ).rejects.toEqual(
-        new BadRequestError(
-          `Invalid name`,
-        ),
+      await expect(userUseCases.updateName('uuid', '')).rejects.toEqual(
+        new BadRequestError(`Invalid name`),
       );
     });
-
 
     test('Should return InternalServerError if the repository returns an error', async () => {
       jest.spyOn(mockedUserRepository, 'findById').mockRejectedValue(new Error('Any'));
 
-      await expect(
-        userUseCases.updateName('uuid', 'newName'),
-      ).rejects.toEqual(
+      await expect(userUseCases.updateName('uuid', 'newName')).rejects.toEqual(
         new InternalServerError(`An unexpected error has occurred. Please try again later.`),
       );
     });
