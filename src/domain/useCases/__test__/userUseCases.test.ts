@@ -1,7 +1,7 @@
 import { IUserRepository } from '@src/domain/interfaces/repositories/userRepository';
 import { UserUseCases } from '../userUseCases';
 import { IPasswordEncryptor } from '@src/domain/interfaces/adapters/passwordEncryptor';
-import { BadRequestError, InternalServerError } from '@src/domain/util/errors/appErrors';
+import { BadRequestError, InternalServerError, NotFoundError } from '@src/domain/util/errors/appErrors';
 
 describe('UserUseCases tests', () => {
   let mockedUserRepository: jest.Mocked<IUserRepository>;
@@ -25,6 +25,7 @@ describe('UserUseCases tests', () => {
   });
 
   describe('CreateUser tests', () => {
+
     test('Must create user successfully', async () => {
       const userExpected = {
         id: 'uuid',
@@ -172,4 +173,48 @@ describe('UserUseCases tests', () => {
       );
     });
   });
+
+  describe('FindById tests', () => {
+
+    test('Must return user by id', async () => {
+      const userExpected = {
+        id: 'uuid',
+        name: 'John Doe',
+        email: 'johnDoe@email.com',
+        password: 'johnDoePass',
+      };
+
+      jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(userExpected);
+
+      const sut = await userUseCases.findById('uuid');
+
+      expect(sut).toEqual({
+        id: 'uuid',
+        name: 'John Doe',
+        email: 'johnDoe@email.com',
+      });
+    })
+
+    test('should return NotFoundError if it does not find the user by id', async () => {
+
+      jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
+
+      await expect(
+        userUseCases.findById('uuid'),
+      ).rejects.toEqual(
+        new NotFoundError(`Not found user by with id = uuid`),
+      );
+    })
+
+    test('Should return InternalServerError if the repository returns an error', async () => {
+      jest.spyOn(mockedUserRepository, 'findById').mockRejectedValue(new Error('Any'));
+
+      await expect(
+        userUseCases.findById('uuid'),
+      ).rejects.toEqual(
+        new InternalServerError(`An unexpected error has occurred. Please try again later.`),
+      );
+    })
+
+  })
 });

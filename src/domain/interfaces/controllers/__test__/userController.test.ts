@@ -11,7 +11,8 @@ describe('UserController test', () => {
 
     beforeAll(() => {
         mockedUserUseCases = {
-            createUser: jest.fn()
+            createUser: jest.fn(),
+            findById: jest.fn()
         }
         userController = new UserController(mockedUserUseCases);
         mockedHttpContext = {
@@ -22,7 +23,7 @@ describe('UserController test', () => {
 
     describe('Function Create user tests', () => {
 
-        test('It should return a role by id with status code = 200', async () => {
+        test('Must create user successfully and return status code = 201', async () => {
 
             const responseExpected = {
                 id: 'uuid',
@@ -46,7 +47,7 @@ describe('UserController test', () => {
             await userController.create(mockedHttpContext);
 
             expect(mockedHttpContext.send).toHaveBeenCalledWith({
-                statusCode: 200,
+                statusCode: 201,
                 body: responseExpected
             });
 
@@ -114,9 +115,62 @@ describe('UserController test', () => {
         })
     });
 
+    describe('FindById tests', () => {
 
+        test('It should return a User by id with status code = 200', async () => {
+            const serviceResponseExpected = {
+                id: 'uuid',
+                name: 'John Doe',
+                email: 'johnDoe@email.com',
+            }
 
+            jest.spyOn(mockedUserUseCases, 'findById').mockResolvedValue(serviceResponseExpected);
 
+            (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
+                headers: { any: '' },
+                body: {},
+                params: { id: 'uuid' },
+                query: { any: '' },
+            });
 
+            await userController.findById(mockedHttpContext);
 
+            expect(mockedHttpContext.send).toHaveBeenCalledWith({
+                statusCode: 200,
+                body: serviceResponseExpected,
+            });
+        })
+
+        test('Must handle entries when id param is not found', async () => {
+
+            (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
+                headers: { any: '' },
+                body: {},
+                query: { any: '' },
+            });
+
+            await userController.findById(mockedHttpContext);
+
+            expect(mockedUserUseCases.findById).toHaveBeenCalledWith('')
+        })
+
+        test('Must return bad request when UserUseCase returns an error', async () => {
+            jest.spyOn(mockedUserUseCases, 'findById').mockRejectedValue(new Error('Unexpected'));
+
+            (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
+                headers: { any: '' },
+                body: {},
+                params: { id: 'uuid' },
+                query: { any: '' },
+            });
+
+            await userController.findById(mockedHttpContext);
+
+            expect(mockedHttpContext.send).toHaveBeenCalledWith({
+                statusCode: 500,
+                body: { message: `Unexpected error occurred.` },
+            });
+        })
+
+    })
 })

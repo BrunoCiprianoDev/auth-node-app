@@ -17,6 +17,16 @@ export default class UserController extends BaseController {
 
             const result = await this.userUseCases.createUser({ name, email, password, confirmPassword });
 
+            httpContext.send({ statusCode: 201, body: result });
+        } catch (error: unknown) {
+            httpContext.send(this.handleClientErrors(error));
+        }
+    }
+
+    public async findById(httpContext: IHttpContext): Promise<void> {
+        try {
+            const id = (httpContext.getRequest().params?.id as string) ?? '';
+            const result = await this.userUseCases.findById(id);
             httpContext.send({ statusCode: 200, body: result });
         } catch (error: unknown) {
             httpContext.send(this.handleClientErrors(error));
