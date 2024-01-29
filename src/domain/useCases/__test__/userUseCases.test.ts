@@ -253,10 +253,8 @@ describe('UserUseCases tests', () => {
       });
     });
 
-
     //UpdatePassword tests
     describe('UpdatePassword Tests', () => {
-
       test('Must update password successfully', async () => {
         const userExpected = {
           id: 'uuid',
@@ -268,41 +266,105 @@ describe('UserUseCases tests', () => {
         jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(userExpected);
         jest.spyOn(mockedUserRepository, 'updatePassword').mockResolvedValue(userExpected);
 
-        const sut = await userUseCases.updatePassword('uuid', 'johnDoePass@!123', 'johnDoePass@!123');
+        const sut = await userUseCases.updatePassword(
+          'uuid',
+          'johnDoePass@!123',
+          'johnDoePass@!123',
+        );
 
         expect(sut).toEqual({
           id: 'uuid',
           name: 'John Doe',
           email: 'johnDoe@email.com',
         });
-      })
+      });
 
       test('It should return an error if the password does not match confirm password', async () => {
-        await expect(userUseCases.updatePassword('uuid', 'johnDoePass@!123', 'anyString')).rejects.toEqual(
-          new BadRequestError(`Passwords do not match. Please make sure the password and confirm password are identical.`),
+        await expect(
+          userUseCases.updatePassword('uuid', 'johnDoePass@!123', 'anyString'),
+        ).rejects.toEqual(
+          new BadRequestError(
+            `Passwords do not match. Please make sure the password and confirm password are identical.`,
+          ),
         );
-      })
+      });
 
       test('It should return an error if the password is invalid', async () => {
-        await expect(userUseCases.updatePassword('uuid', 'johnDoePass', 'johnDoePass')).rejects.toEqual(
-          new BadRequestError(`The password is invalid. It must be at least 8 characters long and contain at least 2 special characters.`),
+        await expect(
+          userUseCases.updatePassword('uuid', 'johnDoePass', 'johnDoePass'),
+        ).rejects.toEqual(
+          new BadRequestError(
+            `The password is invalid. It must be at least 8 characters long and contain at least 2 special characters.`,
+          ),
         );
-      })
+      });
 
       test('Must return NotFoundError when not finding user by id', async () => {
         jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
-        await expect(userUseCases.updatePassword('uuid', 'johnDoePass@!123', 'johnDoePass@!123')).rejects.toEqual(
-          new NotFoundError(`Unable to update password. User not found.`),
-        );
-      })
+        await expect(
+          userUseCases.updatePassword('uuid', 'johnDoePass@!123', 'johnDoePass@!123'),
+        ).rejects.toEqual(new NotFoundError(`Unable to update password. User not found.`));
+      });
 
       test('Should return InternalServerError if the repository returns an error', async () => {
         jest.spyOn(mockedUserRepository, 'findById').mockRejectedValue(new Error('Any'));
 
-        await expect(userUseCases.updatePassword('uuid', 'johnDoePass@!123', 'johnDoePass@!123')).rejects.toEqual(
+        await expect(
+          userUseCases.updatePassword('uuid', 'johnDoePass@!123', 'johnDoePass@!123'),
+        ).rejects.toEqual(
           new InternalServerError(`An unexpected error has occurred. Please try again later.`),
         );
       });
-    })
+    });
+
+    describe('UpdateName Tests', () => {
+      test('Must update name successfully', async () => {
+        const userExpected = {
+          id: 'uuid',
+          name: 'newName',
+          email: 'johnDoe@email.com',
+          password: 'johnDoePass',
+        };
+
+        jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(userExpected);
+        jest.spyOn(mockedUserRepository, 'updateName').mockResolvedValue(userExpected);
+
+        const sut = await userUseCases.updateName('uuid', 'newName');
+
+        expect(sut).toEqual({
+          id: 'uuid',
+          name: 'newName',
+          email: 'johnDoe@email.com',
+        });
+      });
+    });
+
+    test('Must return NotFoundError when not finding user by id', async () => {
+      jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
+      await expect(userUseCases.updateName('uuid', 'newName')).rejects.toEqual(
+        new NotFoundError(`Not found user by with id = uuid`),
+      );
+    });
+
+    test('It should return an error if the name is invalid', async () => {
+      await expect(
+        userUseCases.updateName('uuid', ''),
+      ).rejects.toEqual(
+        new BadRequestError(
+          `Invalid name`,
+        ),
+      );
+    });
+
+
+    test('Should return InternalServerError if the repository returns an error', async () => {
+      jest.spyOn(mockedUserRepository, 'findById').mockRejectedValue(new Error('Any'));
+
+      await expect(
+        userUseCases.updateName('uuid', 'newName'),
+      ).rejects.toEqual(
+        new InternalServerError(`An unexpected error has occurred. Please try again later.`),
+      );
+    });
   });
-})
+});

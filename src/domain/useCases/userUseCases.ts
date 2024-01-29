@@ -13,16 +13,20 @@ export interface IUserUseCases {
 
   findByEmail(email: string): Promise<UserReadyOnly>;
 
-  updatePassword(id: string, newPassword: string, confirmNewPassword: string): Promise<UserReadyOnly>;
-  /*
-   updateName(token: string, newName: string): Promise<UserReadyOnly>;*/
+  updatePassword(
+    id: string,
+    newPassword: string,
+    confirmNewPassword: string,
+  ): Promise<UserReadyOnly>;
+
+  updateName(id: string, newName: string): Promise<UserReadyOnly>;
 }
 
 export class UserUseCases implements IUserUseCases {
   constructor(
     private userRepository: IUserRepository,
     private passwordEncryptor: IPasswordEncryptor,
-  ) { }
+  ) {}
 
   public async createUser(user: CreateUserData): Promise<UserReadyOnly> {
     try {
@@ -83,9 +87,12 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  public async updatePassword(id: string, newPassword: string, confirmNewPassword: string): Promise<UserReadyOnly> {
+  public async updatePassword(
+    id: string,
+    newPassword: string,
+    confirmNewPassword: string,
+  ): Promise<UserReadyOnly> {
     try {
-
       if (newPassword !== confirmNewPassword) {
         throw new BadRequestError(
           'Passwords do not match. Please make sure the password and confirm password are identical.',
@@ -105,6 +112,29 @@ export class UserUseCases implements IUserUseCases {
       }
 
       const result = await this.userRepository.updatePassword(id, newPassword);
+
+      return { id: result.id, name: result.name, email: result.email };
+    } catch (error) {
+      if (error instanceof NotFoundError || error instanceof BadRequestError) {
+        throw error;
+      }
+      throw new InternalServerError();
+    }
+  }
+
+  public async updateName(id: string, newName: string): Promise<UserReadyOnly> {
+    try {
+      if (!isValidString(newName)) {
+        throw new BadRequestError('Invalid name');
+      }
+
+      const existsById = await this.userRepository.findById(id);
+
+      if (!existsById) {
+        throw new NotFoundError(`Not found user by with id = ${id}`);
+      }
+
+      const result = await this.userRepository.updateName(id, newName);
 
       return { id: result.id, name: result.name, email: result.email };
     } catch (error) {

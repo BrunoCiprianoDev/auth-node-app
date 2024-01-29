@@ -33,7 +33,6 @@ export default class UserController extends BaseController {
     }
   }
 
-
   public async findByEmail(httpContext: IHttpContext): Promise<void> {
     try {
       const id = (httpContext.getRequest().params?.email as string) ?? '';
@@ -47,7 +46,7 @@ export default class UserController extends BaseController {
   public async updatePassword(httpContext: IHttpContext): Promise<void> {
     try {
       const body = httpContext.getRequest().body;
-      const id = (body.name as string) ?? '';
+      const id = (body.id as string) ?? '';
       const newPassword = (body.newPassword as string) ?? '';
       const confirmNewPassword = (body.confirmNewPassword as string) ?? '';
       const result = await this.userUseCases.updatePassword(id, newPassword, confirmNewPassword);
@@ -56,4 +55,17 @@ export default class UserController extends BaseController {
       httpContext.send(this.handleClientErrors(error));
     }
   }
+
+  public async updateName(httpContext: IHttpContext): Promise<void> {
+    try {
+      const body = httpContext.getRequest().body;
+      const id = (body.id as string) ?? '';
+      const newName = (body.newName as string) ?? '';
+      const result = await this.userUseCases.updateName(id, newName);
+      httpContext.send({ statusCode: 200, body: result });
+    } catch (error: unknown) {
+      httpContext.send(this.handleClientErrors(error));
+    }
+  }
+
 }
