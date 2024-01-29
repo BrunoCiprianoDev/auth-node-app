@@ -11,11 +11,11 @@ export interface IUserUseCases {
 
   findById(id: string): Promise<UserReadyOnly>;
 
-  /*      findByEmail(email: string): Promise<UserReadyOnly>;
-   
-       updatePassword(token: string, newPassword: string): Promise<UserReadyOnly>;
-   
-       updateName(token: string, newName: string): Promise<UserReadyOnly>;*/
+  findByEmail(email: string): Promise<UserReadyOnly>;
+
+  /*     updatePassword(token: string, newPassword: string): Promise<UserReadyOnly>;
+ 
+   updateName(token: string, newName: string): Promise<UserReadyOnly>;*/
 }
 
 export class UserUseCases implements IUserUseCases {
@@ -58,7 +58,23 @@ export class UserUseCases implements IUserUseCases {
       }
 
       return { id: result.id, name: result.name, email: result.email };
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      throw new InternalServerError();
+    }
+  }
 
+  public async findByEmail(email: string): Promise<UserReadyOnly> {
+    try {
+      const result = await this.userRepository.findByEmail(email);
+
+      if (!result) {
+        throw new NotFoundError(`Not found user by with email = ${email}`);
+      }
+
+      return { id: result.id, name: result.name, email: result.email };
     } catch (error) {
       if (error instanceof NotFoundError) {
         throw error;

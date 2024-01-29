@@ -5,12 +5,10 @@ export interface User {
   password: string;
 }
 
-export interface UserWithoutId extends Omit<User, 'id'> {
-
-}
+export interface UserWithoutId extends Omit<User, 'id'> {}
 
 export interface CreateUserData extends UserWithoutId {
   confirmPassword: string;
 }
 
-export interface UserReadyOnly extends Omit<User, 'password'> { }
+export interface UserReadyOnly extends Omit<User, 'password'> {}
