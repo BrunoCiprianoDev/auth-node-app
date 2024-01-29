@@ -5,7 +5,6 @@ import { exec } from 'child_process';
 import loggerTests from './logger-tests';
 
 export default async function setup() {
-
   await preparationEnvironmentVariables();
   await databasePreparation();
 
@@ -22,13 +21,15 @@ async function preparationEnvironmentVariables() {
   dotenvConfig({ path: '.env.test' });
   process.env.DATABASE_URL = `${url}?schema=${schema}`;
   process.env.DATABASE_SCHEMA = `${schema}`;
-  loggerTests.info('Enviroment variables ready:' +
-    `\nDATABASE_URL=${process.env.DATABASE_URL}` +
-    `\nDATABASE_SCHEMA=${process.env.DATABASE_SCHEMA}`)
+  loggerTests.info(
+    'Enviroment variables ready:' +
+      `\nDATABASE_URL=${process.env.DATABASE_URL}` +
+      `\nDATABASE_SCHEMA=${process.env.DATABASE_SCHEMA}`,
+  );
 }
 
 /**
- * Using the loaded environment variables, commands are executed to add the migration to the database 
+ * Using the loaded environment variables, commands are executed to add the migration to the database
  * and insert the seeds.
  */
 async function databasePreparation() {
@@ -39,7 +40,6 @@ async function databasePreparation() {
     //await execSync(`${prismaBinary} db seed`);
   } catch (error) {
     loggerTests.error(error);
-
   }
   loggerTests.info('Database for test ready');
 }
