@@ -26,7 +26,7 @@ export class UserUseCases implements IUserUseCases {
   constructor(
     private userRepository: IUserRepository,
     private passwordEncryptor: IPasswordEncryptor,
-  ) {}
+  ) { }
 
   public async createUser(user: CreateUserData): Promise<UserReadyOnly> {
     try {
@@ -58,7 +58,7 @@ export class UserUseCases implements IUserUseCases {
       const result = await this.userRepository.findById(id);
 
       if (!result) {
-        throw new NotFoundError(`Not found user by with id = ${id}`);
+        throw new NotFoundError(`Not found user with id ${id}`);
       }
 
       return { id: result.id, name: result.name, email: result.email };
@@ -75,7 +75,7 @@ export class UserUseCases implements IUserUseCases {
       const result = await this.userRepository.findByEmail(email);
 
       if (!result) {
-        throw new NotFoundError(`Not found user by with email = ${email}`);
+        throw new NotFoundError(`Not found user with email ${email}`);
       }
 
       return { id: result.id, name: result.name, email: result.email };
@@ -131,7 +131,7 @@ export class UserUseCases implements IUserUseCases {
       const existsById = await this.userRepository.findById(id);
 
       if (!existsById) {
-        throw new NotFoundError(`Not found user by with id = ${id}`);
+        throw new NotFoundError(`Not found user with id ${id}`);
       }
 
       const result = await this.userRepository.updateName(id, newName);

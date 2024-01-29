@@ -30,7 +30,7 @@ describe('RoleUseCases tests', () => {
       jest.spyOn(mockedRoleRepository, 'findById').mockResolvedValue(null);
 
       await expect(roleUseCases.findById('uuid')).rejects.toEqual(
-        new NotFoundError(`Role not found by id = uuid`),
+        new NotFoundError(`Role not found with id uuid`),
       );
     });
 

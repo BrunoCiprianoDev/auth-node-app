@@ -8,7 +8,7 @@ export interface IRoleUseCases {
 }
 
 export class RoleUseCases implements IRoleUseCases {
-  constructor(private roleRepository: IRoleRepository) {}
+  constructor(private roleRepository: IRoleRepository) { }
 
   public async findById(id: string): Promise<Role> {
     let response: Role | null;
@@ -18,7 +18,7 @@ export class RoleUseCases implements IRoleUseCases {
       throw new InternalServerError();
     }
     if (!response) {
-      throw new NotFoundError(`Role not found by id = ${id}`);
+      throw new NotFoundError(`Role not found with id ${id}`);
     }
     return response;
   }

@@ -203,7 +203,7 @@ describe('UserUseCases tests', () => {
       jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
 
       await expect(userUseCases.findById('uuid')).rejects.toEqual(
-        new NotFoundError(`Not found user by with id = uuid`),
+        new NotFoundError(`Not found user with id uuid`),
       );
     });
 
@@ -240,7 +240,7 @@ describe('UserUseCases tests', () => {
         jest.spyOn(mockedUserRepository, 'findByEmail').mockResolvedValue(null);
 
         await expect(userUseCases.findByEmail('johnDoe@email.com')).rejects.toEqual(
-          new NotFoundError(`Not found user by with email = johnDoe@email.com`),
+          new NotFoundError(`Not found user with email johnDoe@email.com`),
         );
       });
 
@@ -342,7 +342,7 @@ describe('UserUseCases tests', () => {
     test('Must return NotFoundError when not finding user by id', async () => {
       jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
       await expect(userUseCases.updateName('uuid', 'newName')).rejects.toEqual(
-        new NotFoundError(`Not found user by with id = uuid`),
+        new NotFoundError(`Not found user with id uuid`),
       );
     });
 
