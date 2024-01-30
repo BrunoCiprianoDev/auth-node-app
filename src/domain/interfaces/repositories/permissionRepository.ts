@@ -1,11 +1,15 @@
-import { Permission, PermissionWithoutId } from '@src/domain/entities/permission';
+import { CreatePermissionData, Permission } from '@src/domain/entities/permission';
 
 export interface IPermissionRepository {
-  create(userRole: PermissionWithoutId): Promise<Permission>;
+  create(permission: CreatePermissionData): Promise<Permission>;
+
+  exists(userId: string, roleId: string): Promise<boolean>;
 
   findById(id: string): Promise<Permission | null>;
 
   findByUserId(useId: string): Promise<Permission[]>;
+
+  findByUserEmail(userEmail: string): Promise<Permission[]>;
 
   findByRoleId(roleId: string): Promise<Permission[]>;
 

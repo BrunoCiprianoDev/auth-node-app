@@ -23,6 +23,7 @@ describe('UserUseCases tests', () => {
 
     mockedIPasswordEncryptor = {
       encryptor: jest.fn(),
+      passwordCompare: jest.fn(),
     };
 
     userUseCases = new UserUseCases(mockedUserRepository, mockedIPasswordEncryptor);
@@ -337,27 +338,77 @@ describe('UserUseCases tests', () => {
           email: 'johnDoe@email.com',
         });
       });
+      test('Must return NotFoundError when not finding user by id', async () => {
+        jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
+        await expect(userUseCases.updateName('uuid', 'newName')).rejects.toEqual(
+          new NotFoundError(`Not found user with id uuid`),
+        );
+      });
+
+      test('It should return an error if the name is invalid', async () => {
+        await expect(userUseCases.updateName('uuid', '')).rejects.toEqual(
+          new BadRequestError(`Invalid name`),
+        );
+      });
+
+      test('Should return InternalServerError if the repository returns an error', async () => {
+        jest.spyOn(mockedUserRepository, 'findById').mockRejectedValue(new Error('Any'));
+
+        await expect(userUseCases.updateName('uuid', 'newName')).rejects.toEqual(
+          new InternalServerError(`An unexpected error has occurred. Please try again later.`),
+        );
+      });
     });
 
-    test('Must return NotFoundError when not finding user by id', async () => {
-      jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
-      await expect(userUseCases.updateName('uuid', 'newName')).rejects.toEqual(
-        new NotFoundError(`Not found user with id uuid`),
-      );
-    });
+    // Test ComparePassword
+    describe('ComparePassword tests', () => {
+      test('Must return true when the password is valid.', async () => {
+        const userExpected = {
+          id: 'uuid',
+          name: 'John Doe',
+          email: 'johnDoe@email.com',
+          password: 'johnDoePass',
+        };
+        jest.spyOn(mockedUserRepository, 'findByEmail').mockResolvedValue(userExpected);
+        jest.spyOn(mockedIPasswordEncryptor, 'passwordCompare').mockResolvedValue(true);
 
-    test('It should return an error if the name is invalid', async () => {
-      await expect(userUseCases.updateName('uuid', '')).rejects.toEqual(
-        new BadRequestError(`Invalid name`),
-      );
-    });
+        const sut = await userUseCases.passwordMatches('johnDoe@email.com', 'johnDoePass');
 
-    test('Should return InternalServerError if the repository returns an error', async () => {
-      jest.spyOn(mockedUserRepository, 'findById').mockRejectedValue(new Error('Any'));
+        expect(sut).toEqual(true);
+      });
 
-      await expect(userUseCases.updateName('uuid', 'newName')).rejects.toEqual(
-        new InternalServerError(`An unexpected error has occurred. Please try again later.`),
-      );
+      test('Must return false when user email not found.', async () => {
+        jest.spyOn(mockedUserRepository, 'findByEmail').mockResolvedValue(null);
+
+        const sut = await userUseCases.passwordMatches('johnDoe@email.com', 'johnDoePass');
+
+        expect(sut).toEqual(false);
+      });
+
+      test('Must return false when password not match.', async () => {
+        const userExpected = {
+          id: 'uuid',
+          name: 'John Doe',
+          email: 'johnDoe@email.com',
+          password: 'johnDoePass',
+        };
+        jest.spyOn(mockedUserRepository, 'findByEmail').mockResolvedValue(userExpected);
+        jest.spyOn(mockedIPasswordEncryptor, 'passwordCompare').mockResolvedValue(false);
+
+        const sut = await userUseCases.passwordMatches('johnDoe@email.com', 'johnDoePass');
+
+        expect(sut).toEqual(false);
+      });
+
+      test('Should return InternalServerError if the repository returns an error', async () => {
+        jest.spyOn(mockedUserRepository, 'findByEmail').mockRejectedValue(new Error('Any'));
+
+        await expect(
+          userUseCases.passwordMatches('johnDoe@email.com', 'johnDoePass'),
+        ).rejects.toEqual(
+          new InternalServerError(`An unexpected error has occurred. Please try again later.`),
+        );
+      });
     });
   });
 });

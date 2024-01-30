@@ -20,6 +20,8 @@ export interface IUserUseCases {
   ): Promise<UserReadyOnly>;
 
   updateName(id: string, newName: string): Promise<UserReadyOnly>;
+
+  passwordMatches(email: string, password: string): Promise<boolean>;
 }
 
 export class UserUseCases implements IUserUseCases {
@@ -141,6 +143,22 @@ export class UserUseCases implements IUserUseCases {
       if (error instanceof NotFoundError || error instanceof BadRequestError) {
         throw error;
       }
+      throw new InternalServerError();
+    }
+  }
+
+  public async passwordMatches(email: string, password: string): Promise<boolean> {
+    try {
+      const user = await this.userRepository.findByEmail(email);
+      if (!user) {
+        return false;
+      }
+      const passwordMatch = await this.passwordEncryptor.passwordCompare(password, user.password);
+      if (!passwordMatch) {
+        return false;
+      }
+      return true;
+    } catch (error) {
       throw new InternalServerError();
     }
   }

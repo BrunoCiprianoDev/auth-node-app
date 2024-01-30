@@ -15,6 +15,7 @@ describe('UserController test', () => {
       findByEmail: jest.fn(),
       updatePassword: jest.fn(),
       updateName: jest.fn(),
+      passwordMatches: jest.fn(),
     };
     userController = new UserController(mockedUserUseCases);
     mockedHttpContext = {
