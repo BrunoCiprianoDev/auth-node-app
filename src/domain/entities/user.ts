@@ -1,4 +1,5 @@
 import { Email, NotEmpty, Password } from '../util/decorators';
+import { Uuid } from '../util/decorators/uuid';
 
 export interface IUser {
   id: string;
@@ -8,6 +9,7 @@ export interface IUser {
 }
 
 export class User implements IUser {
+  @Uuid()
   private _id: string;
 
   @NotEmpty()
