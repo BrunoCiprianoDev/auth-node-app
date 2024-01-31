@@ -1,5 +1,5 @@
-import { Email, NotEmpty, Password } from '../util/decorators';
-import { Uuid } from '../util/decorators/uuid';
+import { Email, NotEmpty, Password } from '../util/validators';
+import { Uuid } from '../util/validators/uuid';
 
 export interface IUser {
   id: string;
@@ -7,6 +7,10 @@ export interface IUser {
   email: string;
   password: string;
 }
+
+export interface IUserCreateData extends Omit<IUser, 'id'> { }
+
+export interface IUserReadyOnly extends Omit<IUser, 'password'> { }
 
 export class User implements IUser {
   @Uuid()
@@ -58,5 +62,22 @@ export class User implements IUser {
 
   get password(): string {
     return this._password;
+  }
+
+  get userData(): IUser {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      password: this.password,
+    };
+  }
+
+  get userDataReadyOnly(): IUserReadyOnly {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+    };
   }
 }

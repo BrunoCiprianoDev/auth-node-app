@@ -7,7 +7,10 @@ export function NotEmpty() {
 
     const getter = () => _value;
     const setter = (value: string) => {
-      _value = notEmptyValidator(value, attribute);
+      if (!isNotEmpty(value)) {
+        throw new ValidationError(`The value for '${attribute}' must not be empty.`);
+      }
+      _value = value;
     };
 
     Object.defineProperty(target, key, {
@@ -18,9 +21,9 @@ export function NotEmpty() {
   };
 }
 
-export function notEmptyValidator(value: string, attribute: string) {
+export function isNotEmpty(value: string) {
   if (!value || value.trim() === '') {
-    throw new ValidationError(`The value for '${attribute}' must not be empty.`);
+    return false;
   }
-  return value;
+  return true;
 }

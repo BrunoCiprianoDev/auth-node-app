@@ -6,7 +6,10 @@ export function Email() {
 
     const getter = () => _email;
     const setter = (email: string) => {
-      _email = emailValidator(email);
+      if (!isValidEmail(email)) {
+        throw new ValidationError('Invalid email');
+      }
+      _email = email;
     };
 
     Object.defineProperty(target, key, {
@@ -17,10 +20,7 @@ export function Email() {
   };
 }
 
-export function emailValidator(email: string): string {
+export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    throw new ValidationError('Invalid email');
-  }
-  return email;
+  return emailRegex.test(email);
 }
