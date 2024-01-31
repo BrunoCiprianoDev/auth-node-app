@@ -1,4 +1,4 @@
-import { BadRequestError } from '../../errors/appErrors';
+import { ValidationError } from '../../errors/validationErrors';
 import { notEmptyValidator } from '../notEmpty';
 
 describe('Email decorator tests', () => {
@@ -9,7 +9,7 @@ describe('Email decorator tests', () => {
 
   test('It should return an error if the string is missing', () => {
     expect(() => notEmptyValidator('', 'attribute_name')).toThrow(
-      new BadRequestError(`The value for 'attribute_name' must not be empty.`),
+      new ValidationError(`The value for 'attribute_name' must not be empty.`),
     );
   });
 });

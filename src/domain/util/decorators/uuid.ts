@@ -1,4 +1,4 @@
-import { BadRequestError } from '../errors/appErrors';
+import { ValidationError } from '../errors/validationErrors';
 
 export function Uuid() {
   return (target: any, key: string) => {
@@ -6,7 +6,7 @@ export function Uuid() {
 
     const getter = () => _value;
     const setter = (value: string) => {
-      _value = value;
+      _value = uuidValidator(value);
     };
 
     Object.defineProperty(target, key, {
@@ -23,7 +23,7 @@ export function uuidValidator(value: string): string {
   }
   const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   if (!uuidRegex.test(value)) {
-    throw new BadRequestError('The id entered does not match the uuid pattern');
+    throw new ValidationError('The id entered does not match the uuid pattern');
   }
   return value;
 }

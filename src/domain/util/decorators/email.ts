@@ -1,4 +1,4 @@
-import { BadRequestError } from '../errors/appErrors';
+import { ValidationError } from '../errors/validationErrors';
 
 export function Email() {
   return (target: any, key: string) => {
@@ -20,7 +20,7 @@ export function Email() {
 export function emailValidator(email: string): string {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    throw new BadRequestError('Invalid email');
+    throw new ValidationError('Invalid email');
   }
   return email;
 }

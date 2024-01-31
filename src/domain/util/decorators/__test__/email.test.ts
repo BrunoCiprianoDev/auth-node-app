@@ -1,4 +1,4 @@
-import { BadRequestError } from '../../errors/appErrors';
+import { ValidationError } from '../../errors/validationErrors';
 import { emailValidator } from '../email';
 
 describe('Email decorator tests', () => {
@@ -8,6 +8,6 @@ describe('Email decorator tests', () => {
   });
 
   test('Should return BadRequestError when email is invalid', () => {
-    expect(() => emailValidator('anyStrign')).toThrow(new BadRequestError(`Invalid email`));
+    expect(() => emailValidator('anyStrign')).toThrow(new ValidationError(`Invalid email`));
   });
 });

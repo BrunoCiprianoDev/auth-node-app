@@ -13,5 +13,6 @@
   "ignorePatterns": ["jest.config.js"],
   "rules": {
     "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "@typescript-eslint/no-explicit-any": "off",
   },
 }

@@ -1,4 +1,4 @@
-import { BadRequestError } from '../../errors/appErrors';
+import { ValidationError } from '../../errors/validationErrors';
 import { uuidValidator } from '../uuid';
 
 describe('Uuid tests', () => {
@@ -12,7 +12,7 @@ describe('Uuid tests', () => {
   });
   test('Should return an error if the uuid does not match the pattern', () => {
     expect(() => uuidValidator('anyString')).toThrow(
-      new BadRequestError(`The id entered does not match the uuid pattern`),
+      new ValidationError(`The id entered does not match the uuid pattern`),
     );
   });
 });

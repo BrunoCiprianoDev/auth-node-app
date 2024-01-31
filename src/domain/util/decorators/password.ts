@@ -1,4 +1,4 @@
-import { BadRequestError } from '../errors/appErrors';
+import { ValidationError } from '../errors/validationErrors';
 
 export function Password() {
   return (target: any, key: string) => {
@@ -19,22 +19,22 @@ export function Password() {
 
 export function passwordValidator(password: string): string {
   if (!password || password.trim() === '') {
-    throw new BadRequestError(`The value for 'password' must not be empty.`);
+    throw new ValidationError(`The value for 'password' must not be empty.`);
   }
 
   if (password.length < 8) {
-    throw new BadRequestError(`The password must be at least 8 characters long.`);
+    throw new ValidationError(`The password must be at least 8 characters long.`);
   }
 
   if (!/[0-9]/.test(password)) {
-    throw new BadRequestError(`The password must contain at least 1 digit.`);
+    throw new ValidationError(`The password must contain at least 1 digit.`);
   }
 
   // eslint-disable-next-line no-useless-escape
   const specialCharCount = (password.match(/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/g) || []).length;
 
   if (specialCharCount < 2) {
-    throw new BadRequestError(`The password must contain at least 2 special characters.`);
+    throw new ValidationError(`The password must contain at least 2 special characters.`);
   }
   return password;
 }

@@ -1,4 +1,4 @@
-import { BadRequestError } from '../errors/appErrors';
+import { ValidationError } from '../errors/validationErrors';
 
 export function NotEmpty() {
   return (target: any, key: string) => {
@@ -7,7 +7,7 @@ export function NotEmpty() {
 
     const getter = () => _value;
     const setter = (value: string) => {
-      _value = value;
+      _value = notEmptyValidator(value, attribute);
     };
 
     Object.defineProperty(target, key, {
@@ -20,7 +20,7 @@ export function NotEmpty() {
 
 export function notEmptyValidator(value: string, attribute: string) {
   if (!value || value.trim() === '') {
-    throw new BadRequestError(`The value for '${attribute}' must not be empty.`);
+    throw new ValidationError(`The value for '${attribute}' must not be empty.`);
   }
   return value;
 }
