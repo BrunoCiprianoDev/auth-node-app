@@ -1,6 +1,6 @@
 declare global {
-    // eslint-disable-next-line 
-    var testRequest: any;
+  // eslint-disable-next-line
+  var testRequest: any;
 }
 
-export { };
+export {};

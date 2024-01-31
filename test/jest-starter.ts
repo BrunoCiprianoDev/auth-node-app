@@ -1,9 +1,7 @@
-import loggerTests from "./config/logger-tests";
+import loggerTests from './config/logger-tests';
 
 beforeAll(async () => {
-    loggerTests.info('Test..');
-})
+  loggerTests.info('Test..');
+});
 
-afterAll(async () => {
-
-})
+afterAll(async () => {});
