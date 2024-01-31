@@ -44,5 +44,5 @@ describe('Role tests', () => {
   test('Must return object of type IRole', () => {
     const role = new Role({ id: '09e10f59-0e4a-4248-8f37-1f19f7258c5e', name: 'admin' });
     expect(role.roleData).toEqual({ id: '09e10f59-0e4a-4248-8f37-1f19f7258c5e', name: 'admin' });
-  })
+  });
 });
