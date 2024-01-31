@@ -111,7 +111,7 @@ describe('User entity tests', () => {
 
     })
 
-    test('It should return an error when trying to set an invalid password', () => {
+    test('It should return an error when trying to set an invalid name', () => {
 
         const userData = { id: '', name: 'John Doe', email: 'johndoe@email.com', password: 'p@ssw0rd!@#$' }
 
