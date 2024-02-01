@@ -23,9 +23,7 @@ describe('User entity tests', () => {
       password: 'p@ssw0rd!@#$',
     };
 
-    expect(() => new User(userData)).toThrow(
-      new ValidationError(`The id entered does not match the uuid pattern`),
-    );
+    expect(() => new User(userData)).toThrow(new ValidationError(`The id entered does not match the uuid pattern`));
   });
 
   test('It should return an error when trying to set an invalid id', () => {
@@ -38,9 +36,7 @@ describe('User entity tests', () => {
 
     const sut = new User(userData);
 
-    expect(() => (sut.id = 'anyString')).toThrow(
-      new ValidationError(`The id entered does not match the uuid pattern`),
-    );
+    expect(() => (sut.id = 'anyString')).toThrow(new ValidationError(`The id entered does not match the uuid pattern`));
   });
 
   test('It should return an error if the email does not match the pattern', () => {
@@ -75,9 +71,7 @@ describe('User entity tests', () => {
       password: '',
     };
 
-    expect(() => new User(userData)).toThrow(
-      new ValidationError(`The password must be at least 8 characters long.`),
-    );
+    expect(() => new User(userData)).toThrow(new ValidationError(`The password must be at least 8 characters long.`));
   });
 
   test('It should return an error when trying to set an invalid password', () => {
@@ -103,9 +97,7 @@ describe('User entity tests', () => {
       password: 'p@ssw0rd!@#$',
     };
 
-    expect(() => new User(userData)).toThrow(
-      new ValidationError(`The value for 'name' must not be empty.`),
-    );
+    expect(() => new User(userData)).toThrow(new ValidationError(`The value for 'name' must not be empty.`));
   });
 
   test('It should return an error when trying to set an invalid name', () => {
@@ -118,9 +110,7 @@ describe('User entity tests', () => {
 
     const sut = new User(userData);
 
-    expect(() => (sut.name = '')).toThrow(
-      new ValidationError(`The value for 'name' must not be empty.`),
-    );
+    expect(() => (sut.name = '')).toThrow(new ValidationError(`The value for 'name' must not be empty.`));
   });
 
   test('Must return object of type IUser', () => {

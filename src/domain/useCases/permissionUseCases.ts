@@ -1,36 +1,51 @@
-import { IPermission, IPermissionCreateData, Permission } from "../entities/auth/permission";
-import { IuuidGenerator } from "../interfaces/adapters/uuidGenerator";
-import { IPermissionRepository } from "../interfaces/repositories/permissionRepository";
-import { BadRequestError, InternalServerError } from "../util/errors/appErrors";
-import { ValidationError } from "../util/errors/validationErrors";
+import { IPermission, IPermissionCreateData, Permission } from '../entities/auth/permission';
+import { IuuidGenerator } from '../interfaces/adapters/uuidGenerator';
+import { IPermissionRepository } from '../interfaces/repositories/permissionRepository';
+import { BadRequestError } from '../util/errors/appErrors';
+import { ErrorHandler } from './handleErrorUseCases';
 
 export interface IPermissionUseCase {
-
-    createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]>
-
+  createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]>;
+  existsPermissions(userId: string, role: string): Promise<boolean>;
 }
 
-export class PermissionUseCase implements IPermissionUseCase {
+export class PermissionUseCase extends ErrorHandler implements IPermissionUseCase {
+  constructor(
+    private uuidGenerator: IuuidGenerator,
+    private permissionRepository: IPermissionRepository,
+  ) {
+    super();
+  }
 
-    constructor(
-        private uuidGenerator: IuuidGenerator,
-        private permissionRepository: IPermissionRepository) { }
+  public async createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]> {
+    try {
+      const permissions = await Promise.all(
+        permissionsCreateData.map(async ({ userId, role }) => {
+          const existsPermission = await this.existsPermissions(userId, role);
 
-    public async createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]> {
-        try {
-            const permissions = await Promise.all(permissionsCreateData.map(async ({ userId, role }) => {
-                const id = await this.uuidGenerator.generate();
-                const permissionData = new Permission({ id, userId, role });
-                return permissionData.permissionData;
-            }));
-            return await this.permissionRepository.createPermissions(permissions);
-        } catch (error) {
-            if (error instanceof ValidationError) {
-                throw new BadRequestError(error.message);
-            }
-            throw new InternalServerError();
-        }
+          if (existsPermission) {
+            throw new BadRequestError(`The user already has ${role} permission`);
+          }
+
+          const id = await this.uuidGenerator.generate();
+
+          const permissionData = new Permission({ id, userId, role });
+
+          return permissionData.permissionData;
+        }),
+      );
+
+      return await this.permissionRepository.createPermissions(permissions);
+    } catch (error) {
+      this.handleError(error);
     }
+  }
 
-
+  public async existsPermissions(userId: string, role: string): Promise<boolean> {
+    try {
+      return await this.permissionRepository.existsPermission(userId, role);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
 }

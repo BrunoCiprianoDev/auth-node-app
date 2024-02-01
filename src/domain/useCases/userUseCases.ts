@@ -2,19 +2,21 @@ import { IUserCreateData, IUserReadyOnly, User } from '../entities';
 import { IPasswordEncryptor } from '../interfaces/adapters/passwordEncryptor';
 import { IuuidGenerator } from '../interfaces/adapters/uuidGenerator';
 import { IUserRepository } from '../interfaces/repositories/userRepository';
-import { BadRequestError, InternalServerError } from '../util/errors/appErrors';
-import { ValidationError } from '../util/errors/validationErrors';
+import { BadRequestError } from '../util/errors/appErrors';
+import { ErrorHandler } from './handleErrorUseCases';
 
 export interface IUserUseCases {
   create(user: IUserCreateData): Promise<IUserReadyOnly>;
 }
 
-export class UserUseCases implements IUserUseCases {
+export class UserUseCases extends ErrorHandler implements IUserUseCases {
   constructor(
     private userRepository: IUserRepository,
     private uuidGenerator: IuuidGenerator,
     private passwordEncryptor: IPasswordEncryptor,
-  ) { }
+  ) {
+    super();
+  }
 
   public async create({ name, email, password }: IUserCreateData): Promise<IUserReadyOnly> {
     try {
@@ -32,22 +34,7 @@ export class UserUseCases implements IUserUseCases {
 
       return await this.userRepository.create(user.userData);
     } catch (error) {
-      if (error instanceof BadRequestError) {
-        throw error;
-      }
-      if (error instanceof ValidationError) {
-        throw new BadRequestError(error.message);
-      }
-      throw new InternalServerError();
+      this.handleError(error);
     }
   }
-  /*
-  public async findById(id: string): Promise<IUserReadyOnly> {
-    try {
-      const result = await this.userRepository.findById();
-
-    } catch (error) {
-      throw new InternalServerError();
-    }
-  }*/
 }

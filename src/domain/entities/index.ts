@@ -1,2 +1,2 @@
 export * from './auth/user';
-export * from '../util/validators/role';
+export * from './auth/permission';
