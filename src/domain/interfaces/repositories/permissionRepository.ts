@@ -1,5 +1,7 @@
-import { IPermission, IPermissionCreateData } from '@src/domain/entities/permission';
+import { IPermission } from "@src/domain/entities/auth/permission";
 
 export interface IPermissionRepository {
-  createUserPermissions(permissions: IPermissionCreateData[]): Promise<IPermission>;
+
+    createPermissions(permissions: IPermission[]): Promise<IPermission[]>;
+
 }

@@ -1,5 +1,5 @@
-import { Email, NotEmpty, Password } from '../util/validators';
-import { Uuid } from '../util/validators/uuid';
+import { Email, NotEmpty, Password } from '../../util/validators';
+import { Uuid } from '../../util/validators/uuid';
 
 export interface IUser {
   id: string;
@@ -8,9 +8,9 @@ export interface IUser {
   password: string;
 }
 
-export interface IUserCreateData extends Omit<IUser, 'id'> {}
+export interface IUserCreateData extends Omit<IUser, 'id'> { }
 
-export interface IUserReadyOnly extends Omit<IUser, 'password'> {}
+export interface IUserReadyOnly extends Omit<IUser, 'password'> { }
 
 export class User implements IUser {
   @Uuid()

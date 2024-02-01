@@ -1,24 +1,36 @@
-import { IPermission, IPermissionCreateData } from '../entities/permission';
-import { IPermissionRepository } from '../interfaces/repositories/permissionRepository';
-import { InternalServerError } from '../util/errors/appErrors';
-import { IRoleUseCases } from './roleUseCases';
-import { IUserUseCases } from './userUseCases';
+import { IPermission, IPermissionCreateData, Permission } from "../entities/auth/permission";
+import { IuuidGenerator } from "../interfaces/adapters/uuidGenerator";
+import { IPermissionRepository } from "../interfaces/repositories/permissionRepository";
+import { BadRequestError, InternalServerError } from "../util/errors/appErrors";
+import { ValidationError } from "../util/errors/validationErrors";
 
-export interface IPermissionUseCases {
-  createUsersPermissions(permissions: IPermissionCreateData[]): Promise<IPermission>;
-  findPermissionsRolesByUser(userId: string): Promise<IPermissionsRolesByUser>;
+export interface IPermissionUseCase {
+
+    createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]>
+
 }
 
-export class PermissionUseCases implements IPermissionUseCases {
-  constructor(
-    private permissionUseCases: IPermissionRepository,
-    private userUseCases: IUserUseCases,
-    private roleUseCases: IRoleUseCases,
-  ) {}
-  public async createUsersPermissions(permissions: IPermissionCreateData[]): Promise<IPermission> {
-    throw new Error('Method not implemented.');
-  }
-  public async findPermissionsRolesByUser(userId: string): Promise<IPermissionsRolesByUser> {
-    throw new Error('Method not implemented.');
-  }
+export class PermissionUseCase implements IPermissionUseCase {
+
+    constructor(
+        private uuidGenerator: IuuidGenerator,
+        private permissionRepository: IPermissionRepository) { }
+
+    public async createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]> {
+        try {
+            const permissions = await Promise.all(permissionsCreateData.map(async ({ userId, role }) => {
+                const id = await this.uuidGenerator.generate();
+                const permissionData = new Permission({ id, userId, role });
+                return permissionData.permissionData;
+            }));
+            return await this.permissionRepository.createPermissions(permissions);
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                throw new BadRequestError(error.message);
+            }
+            throw new InternalServerError();
+        }
+    }
+
+
 }

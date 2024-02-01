@@ -3,11 +3,12 @@ import { ValidationError } from '../errors/validationErrors';
 export function Uuid() {
   return (target: any, key: string) => {
     let _value = target[key];
+    const attribute = key.replace(/_/g, '');
 
     const getter = () => _value;
     const setter = (value: string) => {
       if (!isValidUuid(value)) {
-        throw new ValidationError('The id entered does not match the uuid pattern');
+        throw new ValidationError(`The ${attribute} entered does not match the uuid pattern`);
       }
       _value = value;
     };

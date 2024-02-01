@@ -1,2 +1,2 @@
-export * from './user';
-export * from './role';
+export * from './auth/user';
+export * from '../util/validators/role';

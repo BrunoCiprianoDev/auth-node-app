@@ -5,5 +5,4 @@ export interface IUserRepository {
 
   existsByEmail(email: string): Promise<boolean>;
 
-  findById(id: string): Promise<IUserReadyOnly | null>;
 }

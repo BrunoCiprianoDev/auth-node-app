@@ -13,7 +13,7 @@ describe('UserUseCases tests', () => {
   beforeAll(() => {
     mockedUserRepository = {
       create: jest.fn(),
-      existsByEmail: jest.fn(),
+      existsByEmail: jest.fn()
     };
 
     mockedUuidGenerator = {

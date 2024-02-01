@@ -1,5 +1,5 @@
 import { ValidationError } from '@src/domain/util/errors/validationErrors';
-import { User } from '../user';
+import { User } from '../auth/user';
 
 describe('User entity tests', () => {
   test('Must return a user instance successfully', () => {
