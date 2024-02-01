@@ -7,6 +7,7 @@ import { ValidationError } from '../util/errors/validationErrors';
 
 export interface IUserUseCases {
   create(user: IUserCreateData): Promise<IUserReadyOnly>;
+  //findById(id: string): Promise<IUserReadyOnly>;
 }
 
 export class UserUseCases implements IUserUseCases {
@@ -14,7 +15,10 @@ export class UserUseCases implements IUserUseCases {
     private userRepository: IUserRepository,
     private uuidGenerator: IuuidGenerator,
     private passwordEncryptor: IPasswordEncryptor,
-  ) { }
+  ) {}
+  findById(id: string): Promise<IUserReadyOnly> {
+    throw new Error('Method not implemented.');
+  }
 
   public async create({ name, email, password }: IUserCreateData): Promise<IUserReadyOnly> {
     try {
@@ -41,4 +45,13 @@ export class UserUseCases implements IUserUseCases {
       throw new InternalServerError();
     }
   }
+  /*
+  public async findById(id: string): Promise<IUserReadyOnly> {
+    try {
+      const result = await this.userRepository.findById();
+
+    } catch (error) {
+      throw new InternalServerError();
+    }
+  }*/
 }
