@@ -1,13 +1,13 @@
 import { IuuidGenerator } from '@src/domain/interfaces/adapters/uuidGenerator';
-import { IPermissionRepository } from '@src/domain/interfaces/repositories/permissionRepository';
-import { IPermissionUseCase, PermissionUseCase } from '../permissionUseCases';
+import { IPermissionUseCases, PermissionUseCases } from '../auth/permissionUseCases';
 import { BadRequestError, InternalServerError } from '@src/domain/util/errors/appErrors';
 import { RoleEnum } from '@src/domain/util/validators/role';
+import { IPermissionRepository } from '@src/domain/interfaces/repositories/auth/permissionRepository';
 
 describe('PermissionUseCases tests', () => {
   let uuidGenerator: IuuidGenerator;
   let permissionRepository: IPermissionRepository;
-  let permissionUseCase: IPermissionUseCase;
+  let permissionUseCase: IPermissionUseCases;
 
   beforeAll(() => {
     uuidGenerator = {
@@ -20,7 +20,7 @@ describe('PermissionUseCases tests', () => {
       deletePermission: jest.fn(),
     };
 
-    permissionUseCase = new PermissionUseCase(uuidGenerator, permissionRepository);
+    permissionUseCase = new PermissionUseCases(uuidGenerator, permissionRepository);
   });
 
   describe('Create Permissions tests', () => {

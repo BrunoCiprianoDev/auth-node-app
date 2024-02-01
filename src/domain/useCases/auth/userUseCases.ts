@@ -1,9 +1,9 @@
-import { IUserCreateData, IUserReadyOnly, User } from '../entities';
-import { IPasswordEncryptor } from '../interfaces/adapters/passwordEncryptor';
-import { IuuidGenerator } from '../interfaces/adapters/uuidGenerator';
-import { IUserRepository } from '../interfaces/repositories/userRepository';
-import { BadRequestError } from '../util/errors/appErrors';
-import { ErrorHandler } from './handleErrorUseCases';
+import { IUserCreateData, IUserReadyOnly, User } from '../../entities';
+import { IPasswordEncryptor } from '../../interfaces/adapters/passwordEncryptor';
+import { IuuidGenerator } from '../../interfaces/adapters/uuidGenerator';
+import { IUserRepository } from '../../interfaces/repositories/auth/userRepository';
+import { BadRequestError } from '../../util/errors/appErrors';
+import { ErrorHandler } from '../handleErrorUseCases';
 
 export interface IUserUseCases {
   create(user: IUserCreateData): Promise<IUserReadyOnly>;

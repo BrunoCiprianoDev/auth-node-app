@@ -1,15 +1,15 @@
-import { IPermission, IPermissionCreateData, Permission } from '../entities/auth/permission';
-import { IuuidGenerator } from '../interfaces/adapters/uuidGenerator';
-import { IPermissionRepository } from '../interfaces/repositories/permissionRepository';
-import { BadRequestError } from '../util/errors/appErrors';
-import { ErrorHandler } from './handleErrorUseCases';
+import { IPermission, IPermissionCreateData, Permission } from '../../entities/auth/permission';
+import { IuuidGenerator } from '../../interfaces/adapters/uuidGenerator';
+import { IPermissionRepository } from '../../interfaces/repositories/auth/permissionRepository';
+import { BadRequestError } from '../../util/errors/appErrors';
+import { ErrorHandler } from '../handleErrorUseCases';
 
-export interface IPermissionUseCase {
+export interface IPermissionUseCases {
   createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]>;
   existsPermissions(userId: string, role: string): Promise<boolean>;
 }
 
-export class PermissionUseCase extends ErrorHandler implements IPermissionUseCase {
+export class PermissionUseCases extends ErrorHandler implements IPermissionUseCases {
   constructor(
     private uuidGenerator: IuuidGenerator,
     private permissionRepository: IPermissionRepository,

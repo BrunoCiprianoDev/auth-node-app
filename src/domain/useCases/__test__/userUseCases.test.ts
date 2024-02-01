@@ -1,8 +1,8 @@
 import { IPasswordEncryptor } from '@src/domain/interfaces/adapters/passwordEncryptor';
 import { IuuidGenerator } from '@src/domain/interfaces/adapters/uuidGenerator';
-import { IUserRepository } from '@src/domain/interfaces/repositories/userRepository';
-import { IUserUseCases, UserUseCases } from '../userUseCases';
+import { IUserUseCases, UserUseCases } from '../auth/userUseCases';
 import { BadRequestError, InternalServerError } from '@src/domain/util/errors/appErrors';
+import { IUserRepository } from '@src/domain/interfaces/repositories/auth/userRepository';
 
 describe('UserUseCases tests', () => {
   let mockedUserRepository: jest.Mocked<IUserRepository>;
