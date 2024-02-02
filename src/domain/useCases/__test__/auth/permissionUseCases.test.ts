@@ -18,6 +18,7 @@ describe('PermissionUseCases tests', () => {
       createPermissions: jest.fn(),
       existsPermission: jest.fn(),
       deletePermission: jest.fn(),
+      findPermissionsByUser: jest.fn(),
     };
 
     permissionUseCase = new PermissionUseCases(uuidGenerator, permissionRepository);
@@ -136,6 +137,64 @@ describe('PermissionUseCases tests', () => {
           '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
         ),
       ).rejects.toBeInstanceOf(InternalServerError);
+    });
+  });
+
+  describe('FindPermissionsByUser tests', () => {
+    test('Should return Permissions by userId successfully', async () => {
+      const permissionsExpected = [
+        {
+          id: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
+          userId: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
+          role: RoleEnum.Admin,
+        },
+        {
+          id: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
+          userId: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
+          role: RoleEnum.Admin,
+        },
+      ];
+
+      jest.spyOn(permissionRepository, 'findPermissionsByUser').mockResolvedValue(permissionsExpected);
+
+      const sut = await permissionUseCase.findPermissionsByUser('2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8');
+
+      expect(sut).toEqual(permissionsExpected);
+    });
+
+    test('Should return BadRequestError when not found permission by user id', async () => {
+      jest.spyOn(permissionRepository, 'findPermissionsByUser').mockResolvedValue([]);
+
+      await expect(permissionUseCase.findPermissionsByUser('2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8')).rejects.toEqual(
+        new BadRequestError('No permissions found for this user'),
+      );
+    });
+  });
+
+  describe('DeletePermission tests', () => {
+    test('Should delete permission successfully', async () => {
+      jest.spyOn(permissionRepository, 'deletePermission');
+      jest.spyOn(permissionRepository, 'existsPermission').mockResolvedValue(true);
+
+      await permissionUseCase.deletePermission('2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8', RoleEnum.Standard);
+
+      expect(permissionRepository.existsPermission).toHaveBeenCalledWith(
+        '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
+        'STANDARD',
+      );
+      expect(permissionRepository.deletePermission).toHaveBeenCalledWith(
+        '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
+        'STANDARD',
+      );
+    });
+
+    test('Should return BadRequestError when not found Permission', async () => {
+      jest.spyOn(permissionRepository, 'deletePermission');
+      jest.spyOn(permissionRepository, 'existsPermission').mockResolvedValue(false);
+
+      await expect(
+        permissionUseCase.deletePermission('2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8', RoleEnum.Standard),
+      ).rejects.toEqual(new BadRequestError('Permission not found'));
     });
   });
 });

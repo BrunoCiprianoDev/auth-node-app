@@ -1,6 +1,6 @@
 import { ValidationError } from '@src/domain/util/errors/validationErrors';
 import { Permission } from '../auth/permission';
-import { RoleEnum } from '../../util/validators/role';
+import { RoleEnum } from '../auth/role';
 
 describe('Permission tests', () => {
   test('Should return Permission instance successfully', () => {

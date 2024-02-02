@@ -7,7 +7,7 @@ export interface IPermission {
   role: string;
 }
 
-export interface IPermissionCreateData extends Omit<IPermission, 'id'> { }
+export interface IPermissionCreateData extends Omit<IPermission, 'id'> {}
 
 export class Permission implements IPermission {
   @Uuid()

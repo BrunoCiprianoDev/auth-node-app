@@ -7,6 +7,8 @@ import { ErrorHandler } from '../handleErrorUseCases';
 export interface IPermissionUseCases {
   createPermissions(permissionsCreateData: IPermissionCreateData[]): Promise<IPermission[]>;
   existsPermissions(userId: string, role: string): Promise<boolean>;
+  findPermissionsByUser(userId: string): Promise<IPermission[]>;
+  deletePermission(userId: string, role: string): Promise<void>;
 }
 
 export class PermissionUseCases extends ErrorHandler implements IPermissionUseCases {
@@ -44,6 +46,32 @@ export class PermissionUseCases extends ErrorHandler implements IPermissionUseCa
   public async existsPermissions(userId: string, role: string): Promise<boolean> {
     try {
       return await this.permissionRepository.existsPermission(userId, role);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public async findPermissionsByUser(userId: string): Promise<IPermission[]> {
+    try {
+      const result = await this.permissionRepository.findPermissionsByUser(userId);
+
+      if (result.length === 0) {
+        throw new BadRequestError(`No permissions found for this user`);
+      }
+
+      return result;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public async deletePermission(userId: string, role: string): Promise<void> {
+    try {
+      const exists = await this.existsPermissions(userId, role);
+      if (!exists) {
+        throw new BadRequestError(`Permission not found`);
+      }
+      await this.permissionRepository.deletePermission(userId, role);
     } catch (error) {
       this.handleError(error);
     }
