@@ -1,9 +1,5 @@
+import { RoleEnum } from '@src/domain/entities/auth/role';
 import { ValidationError } from '@src/domain/util/errors/validationErrors';
-
-export enum RoleEnum {
-  Standard = 'STANDARD',
-  Admin = 'ADMIN',
-}
 
 export function Role() {
   return (target: any, key: string) => {
@@ -11,7 +7,10 @@ export function Role() {
 
     const getter = () => _value;
     const setter = (value: string) => {
-      _value = converterStringToRoleEnum(value);
+      if (!isValidRole(value)) {
+        throw new ValidationError(`The value '${value}' is not valid for Role`);
+      }
+      _value = value;
     };
 
     Object.defineProperty(target, key, {
@@ -22,13 +21,8 @@ export function Role() {
   };
 }
 
-export function converterStringToRoleEnum(roleString: string): string {
-  switch (roleString) {
-    case RoleEnum.Standard:
-      return RoleEnum.Standard;
-    case RoleEnum.Admin:
-      return RoleEnum.Admin;
-    default:
-      throw new ValidationError(`The value '${roleString}' is not valid for Role`);
-  }
+export function isValidRole(roleString: string): boolean {
+  const roleValues: string[] = Object.values(RoleEnum);
+  return roleValues.includes(roleString);
 }
+

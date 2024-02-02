@@ -1,5 +1,5 @@
+import { Role } from '@src/domain/util/validators/role';
 import { Uuid } from '@src/domain/util/validators/uuid';
-import { Role } from '../../util/validators/role';
 
 export interface IPermission {
   id: string;

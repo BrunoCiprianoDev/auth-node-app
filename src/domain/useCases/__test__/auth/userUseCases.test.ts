@@ -1,6 +1,6 @@
 import { IPasswordEncryptor } from '@src/domain/interfaces/adapters/passwordEncryptor';
 import { IuuidGenerator } from '@src/domain/interfaces/adapters/uuidGenerator';
-import { IUserUseCases, UserUseCases } from '../auth/userUseCases';
+import { IUserUseCases, UserUseCases } from '../../auth/userUseCases';
 import { BadRequestError, InternalServerError } from '@src/domain/util/errors/appErrors';
 import { IUserRepository } from '@src/domain/interfaces/repositories/auth/userRepository';
 

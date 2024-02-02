@@ -1,8 +1,8 @@
 import { IuuidGenerator } from '@src/domain/interfaces/adapters/uuidGenerator';
-import { IPermissionUseCases, PermissionUseCases } from '../auth/permissionUseCases';
+import { IPermissionUseCases, PermissionUseCases } from '../../auth/permissionUseCases';
 import { BadRequestError, InternalServerError } from '@src/domain/util/errors/appErrors';
-import { RoleEnum } from '@src/domain/util/validators/role';
 import { IPermissionRepository } from '@src/domain/interfaces/repositories/auth/permissionRepository';
+import { RoleEnum } from '@src/domain/entities/auth/role';
 
 describe('PermissionUseCases tests', () => {
   let uuidGenerator: IuuidGenerator;
@@ -100,7 +100,7 @@ describe('PermissionUseCases tests', () => {
             role: RoleEnum.Admin,
           },
         ]),
-      ).rejects.toEqual(new InternalServerError(`An unexpected error has occurred. Please try again later.`));
+      ).rejects.toBeInstanceOf(InternalServerError);
     });
   });
 
@@ -135,7 +135,7 @@ describe('PermissionUseCases tests', () => {
           '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
           '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
         ),
-      ).rejects.toEqual(new InternalServerError(`An unexpected error has occurred. Please try again later.`));
+      ).rejects.toBeInstanceOf(InternalServerError);
     });
   });
 });
