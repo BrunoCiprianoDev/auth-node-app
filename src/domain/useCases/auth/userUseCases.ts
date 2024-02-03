@@ -1,13 +1,16 @@
+import { IPageable } from '@src/domain/interfaces/adapters/pageable';
 import { IUserCreateData, IUserReadyOnly, User } from '../../entities';
 import { IPasswordEncryptor } from '../../interfaces/adapters/passwordEncryptor';
 import { IuuidGenerator } from '../../interfaces/adapters/uuidGenerator';
-import { IUserRepository } from '../../interfaces/repositories/auth/userRepository';
-import { BadRequestError, UnauthorizedError } from '../../util/errors/appErrors';
+import { IUserRepository } from '../../interfaces/repositories/auth/auth/userRepository';
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../../util/errors/appErrors';
 import { ErrorHandler } from '../handleErrorUseCases';
 
 export interface IUserUseCases {
   create(user: IUserCreateData): Promise<IUserReadyOnly>;
   comparePassword(email: string, password: string): Promise<IUserReadyOnly>;
+  findById(id: string): Promise<IUserReadyOnly>;
+  findAll(query: string, pageable: IPageable): Promise<IUserReadyOnly[]>;
 }
 
 export class UserUseCases extends ErrorHandler implements IUserUseCases {
@@ -50,6 +53,25 @@ export class UserUseCases extends ErrorHandler implements IUserUseCases {
         throw new UnauthorizedError('Invalid email or password');
       }
       return { id: user.id, name: user.name, email: user.email };
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+  public async findById(id: string): Promise<IUserReadyOnly> {
+    try {
+      const result = await this.userRepository.findById(id);
+      if (!result) {
+        throw new NotFoundError('User not found by id');
+      }
+      return result;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public async findAll(query: string, pageable: IPageable): Promise<IUserReadyOnly[]> {
+    try {
+      return await this.userRepository.findAll(query, pageable);
     } catch (error) {
       this.handleError(error);
     }

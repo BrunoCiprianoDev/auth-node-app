@@ -1,13 +1,20 @@
 import { IPasswordEncryptor } from '@src/domain/interfaces/adapters/passwordEncryptor';
 import { IuuidGenerator } from '@src/domain/interfaces/adapters/uuidGenerator';
 import { IUserUseCases, UserUseCases } from '../../auth/userUseCases';
-import { BadRequestError, InternalServerError, UnauthorizedError } from '@src/domain/util/errors/appErrors';
-import { IUserRepository } from '@src/domain/interfaces/repositories/auth/userRepository';
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+  UnauthorizedError,
+} from '@src/domain/util/errors/appErrors';
+import { IPageable } from '@src/domain/interfaces/adapters/pageable';
+import { IUserRepository } from '@src/domain/interfaces/repositories/auth/auth/userRepository';
 
 describe('UserUseCases tests', () => {
   let mockedUserRepository: jest.Mocked<IUserRepository>;
   let mockedUuidGenerator: jest.Mocked<IuuidGenerator>;
   let mockedpasswordEncryptor: jest.Mocked<IPasswordEncryptor>;
+  let mockedPageable: jest.Mocked<IPageable>;
   let userUseCases: IUserUseCases;
 
   beforeAll(() => {
@@ -15,6 +22,8 @@ describe('UserUseCases tests', () => {
       create: jest.fn(),
       existsByEmail: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
+      findById: jest.fn(),
     };
 
     mockedUuidGenerator = {
@@ -27,6 +36,15 @@ describe('UserUseCases tests', () => {
     };
 
     userUseCases = new UserUseCases(mockedUserRepository, mockedUuidGenerator, mockedpasswordEncryptor);
+
+    mockedPageable = {
+      page: 1,
+      size: 2,
+      order: '',
+      orderBy: '',
+      getPage: jest.fn(),
+      getSize: jest.fn(),
+    };
   });
 
   describe('Create user tests', () => {
@@ -140,6 +158,59 @@ describe('UserUseCases tests', () => {
       await expect(userUseCases.comparePassword('johndoe@email.com', 'password')).rejects.toEqual(
         new UnauthorizedError('Invalid email or password'),
       );
+    });
+  });
+  describe('FindById tests', () => {
+    test('Should return user by id successfully', async () => {
+      const userExpected = {
+        id: '5f4dcc3b5aa765d61d8327deb882cf99',
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      };
+
+      jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(userExpected);
+
+      const sut = await userUseCases.findById('5f4dcc3b5aa765d61d8327deb882cf99');
+
+      expect(sut).toEqual(userExpected);
+      expect(mockedUserRepository.findById).toHaveBeenCalledWith('5f4dcc3b5aa765d61d8327deb882cf99');
+    });
+
+    test('Should return NotFoundError when not found user by id', async () => {
+      jest.spyOn(mockedUserRepository, 'findById').mockResolvedValue(null);
+
+      await expect(userUseCases.findById('5f4dcc3b5aa765d61d8327deb882cf99')).rejects.toEqual(
+        new NotFoundError('User not found by id'),
+      );
+    });
+  });
+
+  describe('FindAll tests', () => {
+    test('Should return a list users by query', async () => {
+      const usersExpected = [
+        {
+          id: '5f4dcc3b5aa765d61d8327deb882cf99',
+          name: 'John Doe1',
+          email: 'johndoe1@email.com',
+        },
+        {
+          id: '5f4dcc3b5aa765d61d8327deb882cf88',
+          name: 'John Doe2',
+          email: 'johndoe2@email.com',
+        },
+      ];
+
+      jest.spyOn(mockedUserRepository, 'findAll').mockResolvedValue(usersExpected);
+
+      const sut = await userUseCases.findAll('queryEmail', mockedPageable);
+
+      expect(sut).toEqual(usersExpected);
+    });
+
+    test('Should return a InternalServerError when a unpexpected error ocorrus', async () => {
+      jest.spyOn(mockedUserRepository, 'findAll').mockRejectedValue(new Error('Any string'));
+
+      await expect(userUseCases.findAll('queryEmail', mockedPageable)).rejects.toBeInstanceOf(InternalServerError);
     });
   });
 });

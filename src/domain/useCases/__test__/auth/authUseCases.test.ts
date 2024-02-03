@@ -15,6 +15,8 @@ describe('AuthUseCases tests', () => {
     mockedUserUseCases = {
       create: jest.fn(),
       comparePassword: jest.fn(),
+      findById: jest.fn(),
+      findAll: jest.fn(),
     };
 
     mockedPermissionUseCases = {
@@ -26,6 +28,7 @@ describe('AuthUseCases tests', () => {
 
     mockedTokenGenerator = {
       generateToken: jest.fn(),
+      getPayload: jest.fn(),
     };
 
     authUseCases = new AuthUseCases(mockedUserUseCases, mockedPermissionUseCases, mockedTokenGenerator);

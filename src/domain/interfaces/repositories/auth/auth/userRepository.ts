@@ -1,9 +1,14 @@
 import { IUser, IUserReadyOnly } from '@src/domain/entities';
+import { IPageable } from '../../../adapters/pageable';
 
 export interface IUserRepository {
   create({ id, name, email, password }: IUser): Promise<IUserReadyOnly>;
 
   existsByEmail(email: string): Promise<boolean>;
+
+  findAll(query: string, pageable: IPageable): Promise<IUserReadyOnly[]>;
+
+  findById(id: string): Promise<IUserReadyOnly | null>;
 
   /**
    * Finds a user by email address.

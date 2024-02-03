@@ -1,6 +1,6 @@
 import { IPermission, IPermissionCreateData, Permission } from '../../entities/auth/permission';
 import { IuuidGenerator } from '../../interfaces/adapters/uuidGenerator';
-import { IPermissionRepository } from '../../interfaces/repositories/auth/permissionRepository';
+import { IPermissionRepository } from '../../interfaces/repositories/auth/auth/permissionRepository';
 import { BadRequestError } from '../../util/errors/appErrors';
 import { ErrorHandler } from '../handleErrorUseCases';
 

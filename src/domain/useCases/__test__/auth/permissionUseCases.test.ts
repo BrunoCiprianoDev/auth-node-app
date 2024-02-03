@@ -1,8 +1,8 @@
 import { IuuidGenerator } from '@src/domain/interfaces/adapters/uuidGenerator';
 import { IPermissionUseCases, PermissionUseCases } from '../../auth/permissionUseCases';
 import { BadRequestError, InternalServerError } from '@src/domain/util/errors/appErrors';
-import { IPermissionRepository } from '@src/domain/interfaces/repositories/auth/permissionRepository';
 import { RoleEnum } from '@src/domain/entities/auth/role';
+import { IPermissionRepository } from '@src/domain/interfaces/repositories/auth/auth/permissionRepository';
 
 describe('PermissionUseCases tests', () => {
   let uuidGenerator: IuuidGenerator;
