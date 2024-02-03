@@ -8,3 +8,5 @@ export interface ITokenPayload {
   roles: string[];
   token: string;
 }
+
+export interface IPayload extends Omit<ITokenPayload, 'token'> {}
