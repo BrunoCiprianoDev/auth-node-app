@@ -1,7 +1,7 @@
 import { IPasswordEncryptor } from '@src/domain/interfaces/adapters/passwordEncryptor';
 import { IuuidGenerator } from '@src/domain/interfaces/adapters/uuidGenerator';
 import { IUserUseCases, UserUseCases } from '../../auth/userUseCases';
-import { BadRequestError, InternalServerError } from '@src/domain/util/errors/appErrors';
+import { BadRequestError, InternalServerError, UnauthorizedError } from '@src/domain/util/errors/appErrors';
 import { IUserRepository } from '@src/domain/interfaces/repositories/auth/userRepository';
 
 describe('UserUseCases tests', () => {
@@ -14,6 +14,7 @@ describe('UserUseCases tests', () => {
     mockedUserRepository = {
       create: jest.fn(),
       existsByEmail: jest.fn(),
+      findByEmail: jest.fn(),
     };
 
     mockedUuidGenerator = {
@@ -88,6 +89,57 @@ describe('UserUseCases tests', () => {
           password: 'p@ssw0rd!@',
         }),
       ).rejects.toEqual(new InternalServerError(`An unexpected error has occurred. Please try again later.`));
+    });
+  });
+
+  describe('Compare password tests', () => {
+    test('Shoud return UserReadyOnly whne email and password is valid', async () => {
+      const userExpect = {
+        id: 'userId',
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        password: 'passwordEncrypted',
+      };
+
+      jest.spyOn(mockedUserRepository, 'findByEmail').mockResolvedValue(userExpect);
+
+      jest.spyOn(mockedpasswordEncryptor, 'passwordCompare').mockResolvedValue(true);
+
+      const sut = await userUseCases.comparePassword('johndoe@email.com', 'password');
+
+      expect(sut).toEqual({
+        id: 'userId',
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      expect(mockedUserRepository.findByEmail).toHaveBeenCalledWith('johndoe@email.com');
+      expect(mockedpasswordEncryptor.passwordCompare).toHaveBeenCalledWith('password', 'passwordEncrypted');
+    });
+
+    test('Shoud return UnauthorizedError when email is not found', async () => {
+      jest.spyOn(mockedUserRepository, 'findByEmail').mockResolvedValue(null);
+
+      await expect(userUseCases.comparePassword('johndoe@email.com', 'password')).rejects.toEqual(
+        new UnauthorizedError('Invalid email or password'),
+      );
+    });
+
+    test('Shoud return UnauthorizedError when password is invalid', async () => {
+      const userExpect = {
+        id: 'userId',
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        password: 'passwordEncrypted',
+      };
+
+      jest.spyOn(mockedUserRepository, 'findByEmail').mockResolvedValue(userExpect);
+
+      jest.spyOn(mockedpasswordEncryptor, 'passwordCompare').mockResolvedValue(false);
+
+      await expect(userUseCases.comparePassword('johndoe@email.com', 'password')).rejects.toEqual(
+        new UnauthorizedError('Invalid email or password'),
+      );
     });
   });
 });

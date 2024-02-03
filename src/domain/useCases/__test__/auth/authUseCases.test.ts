@@ -1,17 +1,20 @@
-import { InternalServerError } from '@src/domain/util/errors/appErrors';
+import { InternalServerError, UnauthorizedError } from '@src/domain/util/errors/appErrors';
 import { AuthUseCases, IAuthUseCases } from '../../auth/authUseCase';
 import { IPermissionUseCases } from '../../auth/permissionUseCases';
 import { IUserUseCases } from '../../auth/userUseCases';
 import { RoleEnum } from '@src/domain/entities/auth/role';
+import { ITokenGenerator } from '@src/domain/interfaces/adapters/tokenGenerator';
 
 describe('AuthUseCases tests', () => {
   let mockedUserUseCases: jest.Mocked<IUserUseCases>;
   let mockedPermissionUseCases: jest.Mocked<IPermissionUseCases>;
+  let mockedTokenGenerator: jest.Mocked<ITokenGenerator>;
   let authUseCases: IAuthUseCases;
 
   beforeAll(() => {
     mockedUserUseCases = {
       create: jest.fn(),
+      comparePassword: jest.fn(),
     };
 
     mockedPermissionUseCases = {
@@ -21,7 +24,11 @@ describe('AuthUseCases tests', () => {
       deletePermission: jest.fn(),
     };
 
-    authUseCases = new AuthUseCases(mockedUserUseCases, mockedPermissionUseCases);
+    mockedTokenGenerator = {
+      generateToken: jest.fn(),
+    };
+
+    authUseCases = new AuthUseCases(mockedUserUseCases, mockedPermissionUseCases, mockedTokenGenerator);
   });
 
   describe('CreateStandard tests', () => {
@@ -148,6 +155,67 @@ describe('AuthUseCases tests', () => {
             role: RoleEnum.Admin,
           },
         ]);
+      });
+    });
+
+    describe('AuthUser tests', () => {
+      test('Should return a tokenPayload successfully', async () => {
+        const userExpected = {
+          id: 'userId',
+          name: 'John Doe',
+          email: 'johndoe@email.com',
+          password: 'password',
+        };
+
+        jest.spyOn(mockedUserUseCases, 'comparePassword').mockResolvedValue(userExpected);
+
+        const permissionsExpected = [
+          {
+            id: 'roleId01',
+            userId: 'userId',
+            role: 'ADMIN',
+          },
+          {
+            id: 'roleId02',
+            userId: 'userId',
+            role: 'STANDARD',
+          },
+        ];
+
+        jest.spyOn(mockedPermissionUseCases, 'findPermissionsByUser').mockResolvedValue(permissionsExpected);
+
+        const tokenPayloadExpected = {
+          userEmail: 'johndoe@email.com',
+          roles: ['ADMIN', 'STANDARD'],
+          token: 'AnyString',
+        };
+
+        jest.spyOn(mockedTokenGenerator, 'generateToken').mockResolvedValue(tokenPayloadExpected);
+
+        const sut = await authUseCases.authUser({
+          email: 'johndoe@email.com',
+          password: 'password',
+        });
+
+        expect(sut).toEqual(tokenPayloadExpected);
+        expect(mockedUserUseCases.comparePassword).toHaveBeenCalledWith('johndoe@email.com', 'password');
+
+        expect(mockedPermissionUseCases.findPermissionsByUser).toHaveBeenCalledWith('userId');
+
+        expect(mockedTokenGenerator.generateToken).toHaveBeenCalledWith('johndoe@email.com', ['ADMIN', 'STANDARD']);
+      });
+
+      test('Should return UnathorizedError when password ou email is invalid', async () => {
+        jest
+          .spyOn(mockedUserUseCases, 'comparePassword')
+          .mockRejectedValue(new UnauthorizedError('Invalid email or password'));
+
+        await expect(
+          authUseCases.authUser({
+            email: 'johndoe@email.com',
+            password: 'password',
+          }),
+        ).rejects.toEqual(new UnauthorizedError('Invalid email or password'));
       });
     });
   });

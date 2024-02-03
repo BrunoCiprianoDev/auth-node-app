@@ -3,6 +3,8 @@ import { ErrorHandler } from '../handleErrorUseCases';
 import { IUserUseCases } from './userUseCases';
 import { IPermissionUseCases } from './permissionUseCases';
 import { RoleEnum } from '@src/domain/entities/auth/role';
+import { ICredentials, ITokenPayload } from '@src/domain/entities/auth/credentials';
+import { ITokenGenerator } from '@src/domain/interfaces/adapters/tokenGenerator';
 
 export interface IAuthUseCases {
   createStandard(user: IUserCreateData): Promise<IUserReadyOnly>;
@@ -10,12 +12,15 @@ export interface IAuthUseCases {
   createAdmin(user: IUserCreateData): Promise<IUserReadyOnly>;
 
   createSuperUser(user: IUserCreateData): Promise<IUserReadyOnly>;
+
+  authUser(credentials: ICredentials): Promise<ITokenPayload>;
 }
 
 export class AuthUseCases extends ErrorHandler implements IAuthUseCases {
   public constructor(
     private userUseCases: IUserUseCases,
     private permissionUseCases: IPermissionUseCases,
+    private tokenGenerator: ITokenGenerator,
   ) {
     super();
   }
@@ -42,6 +47,19 @@ export class AuthUseCases extends ErrorHandler implements IAuthUseCases {
 
       await this.permissionUseCases.createPermissions(permissionsCreateData);
       return userCreated;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public async authUser({ email, password }: ICredentials): Promise<ITokenPayload> {
+    try {
+      const { id } = await this.userUseCases.comparePassword(email, password);
+      const permissions = await this.permissionUseCases.findPermissionsByUser(id);
+      const roles = permissions.map(permission => {
+        return permission.role;
+      });
+      return await this.tokenGenerator.generateToken(email, roles);
     } catch (error) {
       this.handleError(error);
     }

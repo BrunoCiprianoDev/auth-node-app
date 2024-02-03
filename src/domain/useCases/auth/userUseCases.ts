@@ -2,11 +2,12 @@ import { IUserCreateData, IUserReadyOnly, User } from '../../entities';
 import { IPasswordEncryptor } from '../../interfaces/adapters/passwordEncryptor';
 import { IuuidGenerator } from '../../interfaces/adapters/uuidGenerator';
 import { IUserRepository } from '../../interfaces/repositories/auth/userRepository';
-import { BadRequestError } from '../../util/errors/appErrors';
+import { BadRequestError, UnauthorizedError } from '../../util/errors/appErrors';
 import { ErrorHandler } from '../handleErrorUseCases';
 
 export interface IUserUseCases {
   create(user: IUserCreateData): Promise<IUserReadyOnly>;
+  comparePassword(email: string, password: string): Promise<IUserReadyOnly>;
 }
 
 export class UserUseCases extends ErrorHandler implements IUserUseCases {
@@ -33,6 +34,22 @@ export class UserUseCases extends ErrorHandler implements IUserUseCases {
       user.password = await this.passwordEncryptor.encryptor(password);
 
       return await this.userRepository.create(user.userData);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public async comparePassword(email: string, password: string): Promise<IUserReadyOnly> {
+    try {
+      const user = await this.userRepository.findByEmail(email);
+      if (!user) {
+        throw new UnauthorizedError('Invalid email or password');
+      }
+      const passwordIsValid = await this.passwordEncryptor.passwordCompare(password, user.password);
+      if (!passwordIsValid) {
+        throw new UnauthorizedError('Invalid email or password');
+      }
+      return { id: user.id, name: user.name, email: user.email };
     } catch (error) {
       this.handleError(error);
     }

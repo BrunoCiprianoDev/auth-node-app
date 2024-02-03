@@ -4,7 +4,7 @@ export interface ICredentials {
 }
 
 export interface ITokenPayload {
-  userName: string;
+  userEmail: string;
   roles: string[];
   token: string;
 }
