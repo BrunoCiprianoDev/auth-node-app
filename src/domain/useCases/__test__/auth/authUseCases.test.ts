@@ -52,7 +52,7 @@ describe('AuthUseCases tests', () => {
       jest.spyOn(mockedUserUseCases, 'create').mockResolvedValue(userExpected);
       jest.spyOn(mockedPermissionUseCases, 'createPermissions').mockResolvedValue([roleExpected]);
 
-      const sut = await authUseCases.createStandard({
+      const sut = await authUseCases.createUserWithStandardPermission({
         name: 'John Doe',
         email: 'johndoe@email.com',
         password: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
@@ -72,7 +72,7 @@ describe('AuthUseCases tests', () => {
       jest.spyOn(mockedUserUseCases, 'create').mockRejectedValue(new Error('Any String'));
 
       await expect(
-        authUseCases.createStandard({
+        authUseCases.createUserWithStandardPermission({
           name: 'John Doe',
           email: 'johndoe@email.com',
           password: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
@@ -99,7 +99,7 @@ describe('AuthUseCases tests', () => {
       jest.spyOn(mockedUserUseCases, 'create').mockResolvedValue(userExpected);
       jest.spyOn(mockedPermissionUseCases, 'createPermissions').mockResolvedValue([roleExpected]);
 
-      const sut = await authUseCases.createAdmin({
+      const sut = await authUseCases.createUserWithAdminPermission({
         name: 'John Doe',
         email: 'johndoe@email.com',
         password: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',
@@ -140,7 +140,7 @@ describe('AuthUseCases tests', () => {
         jest.spyOn(mockedUserUseCases, 'create').mockResolvedValue(userExpected);
         jest.spyOn(mockedPermissionUseCases, 'createPermissions').mockResolvedValue(roleExpected);
 
-        const sut = await authUseCases.createSuperUser({
+        const sut = await authUseCases.createUserWithAllPermissions({
           name: 'John Doe',
           email: 'johndoe@email.com',
           password: '2f9fb62d-ddc6-41c0-9d4b-4c66ddc725a8',

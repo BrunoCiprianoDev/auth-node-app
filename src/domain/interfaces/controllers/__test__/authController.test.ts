@@ -10,9 +10,9 @@ describe('AuthControllers tests', () => {
 
   beforeAll(() => {
     mockedAuthUseCase = {
-      createStandard: jest.fn(),
-      createAdmin: jest.fn(),
-      createSuperUser: jest.fn(),
+      createUserWithStandardPermission: jest.fn(),
+      createUserWithAdminPermission: jest.fn(),
+      createUserWithAllPermissions: jest.fn(),
       authUser: jest.fn(),
     };
 
@@ -33,7 +33,7 @@ describe('AuthControllers tests', () => {
         password: 'passwordEncrypted',
       };
 
-      jest.spyOn(mockedAuthUseCase, 'createStandard').mockResolvedValue(userExpect);
+      jest.spyOn(mockedAuthUseCase, 'createUserWithStandardPermission').mockResolvedValue(userExpect);
 
       (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
         headers: { any: '' },
@@ -44,7 +44,7 @@ describe('AuthControllers tests', () => {
         },
       });
 
-      await authController.createStandard(mockedHttpContext);
+      await authController.createUserWithStandardPermission(mockedHttpContext);
 
       expect(mockedHttpContext.send).toHaveBeenCalledWith({
         statusCode: 201,
@@ -53,7 +53,9 @@ describe('AuthControllers tests', () => {
     });
 
     test('Should return status error and message', async () => {
-      jest.spyOn(mockedAuthUseCase, 'createStandard').mockRejectedValue(new BadRequestError('Error message'));
+      jest
+        .spyOn(mockedAuthUseCase, 'createUserWithStandardPermission')
+        .mockRejectedValue(new BadRequestError('Error message'));
 
       (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
         headers: { any: '' },
@@ -64,7 +66,7 @@ describe('AuthControllers tests', () => {
         },
       });
 
-      await authController.createStandard(mockedHttpContext);
+      await authController.createUserWithStandardPermission(mockedHttpContext);
 
       expect(mockedHttpContext.send).toHaveBeenCalledWith({
         statusCode: 400,
@@ -73,7 +75,7 @@ describe('AuthControllers tests', () => {
     });
 
     test('Should return status 500 when unesxpected error occur', async () => {
-      jest.spyOn(mockedAuthUseCase, 'createStandard').mockRejectedValue(new Error('Error message'));
+      jest.spyOn(mockedAuthUseCase, 'createUserWithStandardPermission').mockRejectedValue(new Error('Error message'));
 
       (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
         headers: { any: '' },
@@ -84,7 +86,7 @@ describe('AuthControllers tests', () => {
         },
       });
 
-      await authController.createStandard(mockedHttpContext);
+      await authController.createUserWithStandardPermission(mockedHttpContext);
 
       expect(mockedHttpContext.send).toHaveBeenCalledWith({
         statusCode: 500,
@@ -98,9 +100,13 @@ describe('AuthControllers tests', () => {
         body: {},
       });
 
-      await authController.createStandard(mockedHttpContext);
+      await authController.createUserWithStandardPermission(mockedHttpContext);
 
-      expect(mockedAuthUseCase.createStandard).toHaveBeenCalledWith({ name: '', email: '', password: '' });
+      expect(mockedAuthUseCase.createUserWithStandardPermission).toHaveBeenCalledWith({
+        name: '',
+        email: '',
+        password: '',
+      });
     });
   });
 
@@ -113,7 +119,7 @@ describe('AuthControllers tests', () => {
         password: 'passwordEncrypted',
       };
 
-      jest.spyOn(mockedAuthUseCase, 'createAdmin').mockResolvedValue(userExpect);
+      jest.spyOn(mockedAuthUseCase, 'createUserWithAdminPermission').mockResolvedValue(userExpect);
 
       (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
         headers: { any: '' },
@@ -124,7 +130,7 @@ describe('AuthControllers tests', () => {
         },
       });
 
-      await authController.createAdmin(mockedHttpContext);
+      await authController.createUserWithAdminPermission(mockedHttpContext);
 
       expect(mockedHttpContext.send).toHaveBeenCalledWith({
         statusCode: 201,
@@ -133,7 +139,9 @@ describe('AuthControllers tests', () => {
     });
 
     test('Should return status error and message', async () => {
-      jest.spyOn(mockedAuthUseCase, 'createAdmin').mockRejectedValue(new BadRequestError('Error message'));
+      jest
+        .spyOn(mockedAuthUseCase, 'createUserWithAdminPermission')
+        .mockRejectedValue(new BadRequestError('Error message'));
 
       (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
         headers: { any: '' },
@@ -144,7 +152,7 @@ describe('AuthControllers tests', () => {
         },
       });
 
-      await authController.createAdmin(mockedHttpContext);
+      await authController.createUserWithAdminPermission(mockedHttpContext);
 
       expect(mockedHttpContext.send).toHaveBeenCalledWith({
         statusCode: 400,
@@ -162,7 +170,7 @@ describe('AuthControllers tests', () => {
         password: 'passwordEncrypted',
       };
 
-      jest.spyOn(mockedAuthUseCase, 'createSuperUser').mockResolvedValue(userExpect);
+      jest.spyOn(mockedAuthUseCase, 'createUserWithAllPermissions').mockResolvedValue(userExpect);
 
       (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
         headers: { any: '' },
@@ -173,7 +181,7 @@ describe('AuthControllers tests', () => {
         },
       });
 
-      await authController.createSuperUser(mockedHttpContext);
+      await authController.createUserWithAllPermissions(mockedHttpContext);
 
       expect(mockedHttpContext.send).toHaveBeenCalledWith({
         statusCode: 201,
@@ -182,7 +190,9 @@ describe('AuthControllers tests', () => {
     });
 
     test('Should return status error and message', async () => {
-      jest.spyOn(mockedAuthUseCase, 'createSuperUser').mockRejectedValue(new BadRequestError('Error message'));
+      jest
+        .spyOn(mockedAuthUseCase, 'createUserWithAllPermissions')
+        .mockRejectedValue(new BadRequestError('Error message'));
 
       (mockedHttpContext.getRequest as jest.Mock).mockReturnValue({
         headers: { any: '' },
@@ -193,7 +203,7 @@ describe('AuthControllers tests', () => {
         },
       });
 
-      await authController.createSuperUser(mockedHttpContext);
+      await authController.createUserWithAllPermissions(mockedHttpContext);
 
       expect(mockedHttpContext.send).toHaveBeenCalledWith({
         statusCode: 400,

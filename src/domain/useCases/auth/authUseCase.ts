@@ -7,11 +7,11 @@ import { ICredentials, ITokenPayload } from '@src/domain/entities/auth/credentia
 import { ITokenGenerator } from '@src/domain/interfaces/adapters/tokenGenerator';
 
 export interface IAuthUseCases {
-  createStandard(user: IUserCreateData): Promise<IUserReadyOnly>;
+  createUserWithStandardPermission(user: IUserCreateData): Promise<IUserReadyOnly>;
 
-  createAdmin(user: IUserCreateData): Promise<IUserReadyOnly>;
+  createUserWithAdminPermission(user: IUserCreateData): Promise<IUserReadyOnly>;
 
-  createSuperUser(user: IUserCreateData): Promise<IUserReadyOnly>;
+  createUserWithAllPermissions(user: IUserCreateData): Promise<IUserReadyOnly>;
 
   authUser(credentials: ICredentials): Promise<ITokenPayload>;
 }
@@ -25,15 +25,15 @@ export class AuthUseCases extends ErrorHandler implements IAuthUseCases {
     super();
   }
 
-  public async createStandard(user: IUserCreateData): Promise<IUserReadyOnly> {
+  public async createUserWithStandardPermission(user: IUserCreateData): Promise<IUserReadyOnly> {
     return await this.create(user, [RoleEnum.Standard]);
   }
 
-  public async createAdmin(user: IUserCreateData): Promise<IUserReadyOnly> {
+  public async createUserWithAdminPermission(user: IUserCreateData): Promise<IUserReadyOnly> {
     return await this.create(user, [RoleEnum.Admin]);
   }
 
-  public async createSuperUser(user: IUserCreateData): Promise<IUserReadyOnly> {
+  public async createUserWithAllPermissions(user: IUserCreateData): Promise<IUserReadyOnly> {
     return await this.create(user, [RoleEnum.Standard, RoleEnum.Admin]);
   }
 
