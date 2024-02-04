@@ -69,9 +69,9 @@ export class UserUseCases extends ErrorHandler implements IUserUseCases {
     }
   }
 
-  public async findAll(query: string, pageable: IPageable): Promise<IUserReadyOnly[]> {
+  public async findAll(contains: string, pageable: IPageable): Promise<IUserReadyOnly[]> {
     try {
-      return await this.userRepository.findAll(query, pageable);
+      return await this.userRepository.findAll(contains, pageable);
     } catch (error) {
       this.handleError(error);
     }

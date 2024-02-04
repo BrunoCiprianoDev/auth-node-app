@@ -54,12 +54,12 @@ export class AuthUseCases extends ErrorHandler implements IAuthUseCases {
 
   public async authUser({ email, password }: ICredentials): Promise<ITokenPayload> {
     try {
-      const { id } = await this.userUseCases.comparePassword(email, password);
+      const { id, name } = await this.userUseCases.comparePassword(email, password);
       const permissions = await this.permissionUseCases.findPermissionsByUser(id);
       const roles = permissions.map(permission => {
         return permission.role;
       });
-      return await this.tokenGenerator.generateToken(email, roles);
+      return await this.tokenGenerator.generateToken(name, email, roles);
     } catch (error) {
       this.handleError(error);
     }

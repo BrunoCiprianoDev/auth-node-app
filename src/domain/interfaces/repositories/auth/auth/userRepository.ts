@@ -6,7 +6,7 @@ export interface IUserRepository {
 
   existsByEmail(email: string): Promise<boolean>;
 
-  findAll(query: string, pageable: IPageable): Promise<IUserReadyOnly[]>;
+  findAll(contains: string, pageable: IPageable): Promise<IUserReadyOnly[]>;
 
   findById(id: string): Promise<IUserReadyOnly | null>;
 

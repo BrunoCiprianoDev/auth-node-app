@@ -188,6 +188,7 @@ describe('AuthUseCases tests', () => {
         jest.spyOn(mockedPermissionUseCases, 'findPermissionsByUser').mockResolvedValue(permissionsExpected);
 
         const tokenPayloadExpected = {
+          userName: 'John Doe',
           userEmail: 'johndoe@email.com',
           roles: ['ADMIN', 'STANDARD'],
           token: 'AnyString',
@@ -205,7 +206,10 @@ describe('AuthUseCases tests', () => {
 
         expect(mockedPermissionUseCases.findPermissionsByUser).toHaveBeenCalledWith('userId');
 
-        expect(mockedTokenGenerator.generateToken).toHaveBeenCalledWith('johndoe@email.com', ['ADMIN', 'STANDARD']);
+        expect(mockedTokenGenerator.generateToken).toHaveBeenCalledWith('John Doe', 'johndoe@email.com', [
+          'ADMIN',
+          'STANDARD',
+        ]);
       });
 
       test('Should return UnathorizedError when password ou email is invalid', async () => {

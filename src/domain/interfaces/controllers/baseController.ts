@@ -13,7 +13,7 @@ export default abstract class BaseController {
     }
     return {
       statusCode: 500,
-      body: { message: 'Unexpected error occurred.' },
+      body: { message: 'Unexpected error occurred' },
     };
   }
 }
