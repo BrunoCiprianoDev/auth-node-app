@@ -99,7 +99,6 @@ describe('UserControllers tests', () => {
           page: 1,
           size: 10,
           order: 'asc',
-          orderBy: 'email',
           contains: 'John',
         },
       });
@@ -114,7 +113,6 @@ describe('UserControllers tests', () => {
         page: 1,
         size: 10,
         order: 'asc',
-        orderBy: 'email',
       });
     });
 
@@ -129,7 +127,6 @@ describe('UserControllers tests', () => {
         page: 0,
         size: 0,
         order: '',
-        orderBy: '',
       });
     });
 

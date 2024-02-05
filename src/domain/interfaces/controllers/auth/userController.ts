@@ -30,7 +30,6 @@ export class UserController extends BaseController implements IUserController {
         page: query?.page ?? 0,
         size: query?.size ?? 0,
         order: query?.order ?? '',
-        orderBy: query?.orderBy ?? '',
       } as IPageable;
 
       const contains = (query?.contains as string) ?? '';

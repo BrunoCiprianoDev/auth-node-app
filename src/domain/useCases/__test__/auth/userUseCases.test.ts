@@ -41,9 +41,6 @@ describe('UserUseCases tests', () => {
       page: 1,
       size: 2,
       order: '',
-      orderBy: '',
-      getPage: jest.fn(),
-      getSize: jest.fn(),
     };
   });
 
